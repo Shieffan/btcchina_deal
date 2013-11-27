@@ -5,19 +5,26 @@ import os
 import sys
 import time
 import datetime
+import ConfigParser
 from prettytable import PrettyTable
 import btcchina
 
-access_key = ""
-secret_key = ""
+try:
+  cf = ConfigParser.ConfigParser()    
+  cf.read("btc.conf")  
+except:
+  print "Read config file error.Please make sure that btc.conf file exists." 
+
+access_key = cf.get("info", "access_key") 
+secret_key = cf.get("info", "secret_key") 
 
 def generate_info(bc):
   result = bc.get_account_info()
   message = result["profile"]["username"].title()+",you now have "+result["balance"]["btc"]["amount"] + " bitcons.\n"
-  result = bc.get_transactions("buybtc",1)
+  result = bc.get_transactions("all",1)
   t = result["transaction"][0]
-  price = -float(t["cny_amount"])/float(t["btc_amount"])
-  message += "Your last bought "+t["btc_amount"] + " bitcoins with price CNY:" + str(price)+" at "+ datetime.datetime.fromtimestamp(t["date"]).strftime('%Y-%m-%d %H:%M:%S')
+  price = abs(float(t["cny_amount"])/float(t["btc_amount"]))
+  message += "Last transaction: "+t["type"].upper()+ " " + str(abs(float(t["btc_amount"]))) + " bitcoins with price CNY:" + str(price)+" at "+ datetime.datetime.fromtimestamp(t["date"]).strftime('%Y-%m-%d %H:%M:%S')
   message += "\nInfo updated at "+time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()));
   return message
 
@@ -42,7 +49,7 @@ def refresh_undeal_orders(bc):
     x.align = "l"
     x.padding_width = 2
     for o in result["order"]:
-      x.add_row([b["type"],b["price"],a["amount"],a["amount_original"],b["id"]])
+      x.add_row([o["type"],o["price"],o["amount"],o["amount_original"],o["id"]])
     print '\r'+x.get_string(sortby="Order Type")
     print "Undeal Order updated at " + time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))
   else:
@@ -58,8 +65,8 @@ if __name__ == '__main__':
     print info
     refresh_price(bc)
     refresh_undeal_orders(bc)
-    time.sleep(10)
+    time.sleep(15)
     i+=1
-    if i==90:
+    if i==5:
       info = generate_info(bc)
       i=0

@@ -7,13 +7,14 @@ import hmac
 import hashlib
 import base64
 import httplib
+import socket
 import json
- 
+
 class BTCChina():
     def __init__(self,access=None,secret=None):
         self.access_key=access
         self.secret_key=secret
-        self.conn=httplib.HTTPSConnection("api.btcchina.com")
+        self.conn=httplib.HTTPSConnection("api.btcchina.com",timeout=20)
  
     def _get_tonce(self):
         return int(time.time()*1000000)
@@ -35,7 +36,6 @@ class BTCChina():
             else:
                 pstring+=f+'=&'
         pstring=pstring.strip('&')
- 
         # now with correctly ordered param string, calculate hash
         phash = hmac.new(self.secret_key, pstring, hashlib.sha1).hexdigest()
         return phash
@@ -52,14 +52,18 @@ class BTCChina():
             post_data['id']=tonce
  
         pd_hash=self._get_params_hash(post_data)
- 
+        
         # must use b64 encode        
         auth_string='Basic '+base64.b64encode(self.access_key+':'+pd_hash)
-        headers={'Authorization':auth_string,'Json-Rpc-Tonce':tonce}
+        headers={'Authorization':auth_string,'Json-Rpc-Tonce':tonce,'Content-Type': 'application/json-rpc'}
  
-        #post_data dictionary passed as JSON        
-        self.conn.request("POST",'/api_trade_v1.php',json.dumps(post_data),headers)
-        response = self.conn.getresponse()
+        #post_data dictionary passed as JSON    
+        try:
+            self.conn.request("POST",'/api_trade_v1.php',json.dumps(post_data),headers)
+            response = self.conn.getresponse()
+        except (httplib.HTTPException, socket.error) as ex:
+            print "Error: %s" % ex
+
  
         # check response code, ID, and existence of 'result' or 'error'
         # before passing a dict of results
