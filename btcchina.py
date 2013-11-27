@@ -7,14 +7,13 @@ import hmac
 import hashlib
 import base64
 import httplib
-import socket
 import json
 
 class BTCChina():
     def __init__(self,access=None,secret=None):
         self.access_key=access
         self.secret_key=secret
-        self.conn=httplib.HTTPSConnection("api.btcchina.com",timeout=20)
+        self.conn=httplib.HTTPSConnection("api.btcchina.com",timeout=30)
  
     def _get_tonce(self):
         return int(time.time()*1000000)
@@ -58,13 +57,15 @@ class BTCChina():
         headers={'Authorization':auth_string,'Json-Rpc-Tonce':tonce,'Content-Type': 'application/json-rpc'}
  
         #post_data dictionary passed as JSON    
-        try:
-            self.conn.request("POST",'/api_trade_v1.php',json.dumps(post_data),headers)
-            response = self.conn.getresponse()
-        except (httplib.HTTPException, socket.error) as ex:
-            print "Error: %s" % ex
-
- 
+        while True:
+            try:
+                self.conn.request("POST",'/api_trade_v1.php',json.dumps(post_data),headers)
+                response = self.conn.getresponse()
+                break
+            except Exception as ex:
+                print "Error: %s" % ex
+                continue
+        
         # check response code, ID, and existence of 'result' or 'error'
         # before passing a dict of results
         if response.status == 200:

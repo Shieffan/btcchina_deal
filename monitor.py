@@ -20,7 +20,7 @@ secret_key = cf.get("info", "secret_key")
 
 def generate_info(bc):
   result = bc.get_account_info()
-  message = result["profile"]["username"].title()+",you now have "+result["balance"]["btc"]["amount"] + " bitcons.\n"
+  message = result["profile"]["username"].title()+",you now have "+"{:g}".format(float(result["balance"]["btc"]["amount"])) + " bitcons.\n"
   result = bc.get_transactions("all",1)
   t = result["transaction"][0]
   price = abs(float(t["cny_amount"])/float(t["btc_amount"]))
@@ -49,7 +49,7 @@ def refresh_undeal_orders(bc):
     x.align = "l"
     x.padding_width = 2
     for o in result["order"]:
-      x.add_row([o["type"],o["price"],o["amount"],o["amount_original"],o["id"]])
+      x.add_row([o["type"],o["price"],"{:g}".format(float(o["amount"])),"{:g}".format(float(o["amount_original"])),o["id"]])
     print '\r'+x.get_string(sortby="Order Type")
     print "Undeal Order updated at " + time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))
   else:
