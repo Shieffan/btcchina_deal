@@ -57,14 +57,12 @@ class BTCChina():
         headers={'Authorization':auth_string,'Json-Rpc-Tonce':tonce,'Content-Type': 'application/json-rpc'}
  
         #post_data dictionary passed as JSON    
-        while True:
-            try:
-                self.conn.request("POST",'/api_trade_v1.php',json.dumps(post_data),headers)
-                response = self.conn.getresponse()
-                break
-            except Exception as ex:
-                print "Error: %s" % ex
-                continue
+        try:
+          self.conn.request("POST",'/api_trade_v1.php',json.dumps(post_data),headers)
+          response = self.conn.getresponse()
+        except Exception as ex:
+          print "Error: %s" % ex
+	  return None
         
         # check response code, ID, and existence of 'result' or 'error'
         # before passing a dict of results

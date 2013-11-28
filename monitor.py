@@ -61,12 +61,17 @@ if __name__ == '__main__':
   info = generate_info(bc)
   i = 0
   while 1:    
-    os.system('clear')
-    print info
-    refresh_price(bc)
-    refresh_undeal_orders(bc)
-    time.sleep(15)
-    i+=1
-    if i==5:
-      info = generate_info(bc)
-      i=0
+    try:
+      os.system('clear')
+      print info
+      refresh_price(bc)
+      refresh_undeal_orders(bc)
+      time.sleep(15)
+      i+=1
+      if i==5:
+        info = generate_info(bc)
+        i=0
+    except Exception as e:
+      print e
+      time.sleep(5)
+      continue
