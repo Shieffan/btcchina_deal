@@ -58,11 +58,11 @@ class BTCChina():
  
         #post_data dictionary passed as JSON    
         try:
-          self.conn.request("POST",'/api_trade_v1.php',json.dumps(post_data),headers)
-          response = self.conn.getresponse()
-        except Exception as ex:
-          print "Error: %s" % ex
-	  return None
+            self.conn.request("POST",'/api_trade_v1.php',json.dumps(post_data),headers)
+            response = self.conn.getresponse()
+        except:
+            self.conn=httplib.HTTPSConnection("api.btcchina.com",timeout=30)
+            return None
         
         # check response code, ID, and existence of 'result' or 'error'
         # before passing a dict of results

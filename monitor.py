@@ -72,6 +72,5 @@ if __name__ == '__main__':
         info = generate_info(bc)
         i=0
     except Exception as e:
-      print e
+      print "\n!!!Error: %s ..\nRetring..." % e
       time.sleep(5)
-      continue

@@ -109,82 +109,87 @@ if __name__ == '__main__':
   bc = btcchina.BTCChina(info_access_key,info_secret_key)
   bc_deal = btcchina.BTCChina(deal_access_key,deal_secret_key)
   while True:
-    result = bc.get_account_info()
-    title = result["profile"]["username"].title()
-    btc_amount = result["balance"]["btc"]["amount"] or 0
-    cny_amount = result["balance"]["cny"]["amount"] or 0
-    f_btc_amount = result["frozen"]["btc"]["amount"] or 0
-    f_cny_amount = result["frozen"]["cny"]["amount"] or 0
-    bid_price = get_current_price(bc,type="bid")
-    ask_price = get_current_price(bc,type="ask")
-    os.system('clear')
-    print '''%s%s,您目前可用%g个比特币以及%g元人民币,冻结%g比特币,%g元人民币.
-              \r当前Bid Price %g,当前Ask Price %g.请输入您要执行的交易类型:
-              \r\ts: 卖出比特币
-              \r\tb: 买入比特比
-              \r\tc: 取消挂单
-              \r\tss: 以当前价卖出所有的比特币(sss不确认直接卖出)
-              \r\tcc: 取消所有挂单
-              \r\tr: 刷新信息'''  %(Fore.RESET,title,float(btc_amount),float(cny_amount),float(f_btc_amount),float(f_cny_amount),float(bid_price),float(ask_price))
-    timeout = 60
-    print "\r请输入您要执行的操作: ",
-    sys.stdout.flush()
-    c, _, _ = select([sys.stdin], [], [], timeout)
-    if c:
-      c = sys.stdin.readline()
-    else:
-      print Fore.YELLOW+"输入超时，刷新菜单ing..."
-      continue
-    c=c.strip()
     try:
-      if c.lower()=='s':
-        cc = raw_input('\r请输入您要卖出的比特币数量，全部卖出请直接按ENTER: ')
-        price = raw_input('请您出价,当前价格请直接按ENTER: ')
-        if cc=="":
+      result = bc.get_account_info()
+      title = result["profile"]["username"].title()
+      btc_amount = result["balance"]["btc"]["amount"] or 0
+      cny_amount = result["balance"]["cny"]["amount"] or 0
+      f_btc_amount = result["frozen"]["btc"]["amount"] or 0
+      f_cny_amount = result["frozen"]["cny"]["amount"] or 0
+      bid_price = get_current_price(bc,type="bid")
+      ask_price = get_current_price(bc,type="ask")
+      os.system('clear')
+      print '''%s%s,您目前可用%g个比特币以及%g元人民币,冻结%g比特币,%g元人民币.
+                \r当前Bid Price %g,当前Ask Price %g.请输入您要执行的交易类型:
+                \r\ts: 卖出比特币
+                \r\tb: 买入比特比
+                \r\tc: 取消挂单
+                \r\tss: 以当前价卖出所有的比特币(sss不确认直接卖出)
+                \r\tcc: 取消所有挂单
+                \r\tr: 刷新信息'''  %(Fore.RESET,title,float(btc_amount),float(cny_amount),float(f_btc_amount),float(f_cny_amount),float(bid_price),float(ask_price))
+      timeout = 60
+      print "\r请输入您要执行的操作: ",
+      sys.stdout.flush()
+      c, _, _ = select([sys.stdin], [], [], timeout)
+      if c:
+        c = sys.stdin.readline()
+      else:
+        print Fore.YELLOW+"输入超时，刷新菜单ing..."
+        continue
+      c=c.strip()
+      try:
+        if c.lower()=='s':
+          cc = raw_input('\r请输入您要卖出的比特币数量，全部卖出请直接按ENTER: ')
+          price = raw_input('请您出价,当前价格请直接按ENTER: ')
+          if cc=="":
+            res=bc.get_account_info()
+            cc=float(res["balance"]["btc"]["amount"])
+          else:
+            cc=float(cc)
+          if price=="":
+            price="current"
+          else:
+            price=float(price)
+          process_order(bc_deal,cc,price,"sell")
+        elif c.lower()=='b':
+          cc = raw_input('\r请输入您要买入的比特币数量: ')
+          price = raw_input('请您出价,当前价格请直接按ENTER: ')
+          cc=float(cc)
+          if price=="":
+              price="current"
+          else:
+             price=float(price)
+          process_order(bc_deal,cc,price,"buy")
+        elif c.lower()=='c':
+          cc = raw_input('\r请输入您要取消的挂单id: ')
+          cc = int(cc)
+          cancel_order(bc_deal,cc)
+        elif c.lower()=='ss' or c.lower()=='sss':
           res=bc.get_account_info()
           cc=float(res["balance"]["btc"]["amount"])
-        else:
-          cc=float(cc)
-        if price=="":
           price="current"
+          if c.lower()=='ss':
+            process_order(bc_deal,cc,price,"sell")
+          else:
+            process_order(bc_deal,cc,price,"sell","y")
+        elif c.lower()=='cc':
+          print "Fetch your undeal orders..."
+          result = bc.get_orders(None,True)
+          undeal_ids=[o["id"] for o in result["order"]]
+          if len(undeal_ids)>0:
+            cancel_orders(bc_deal,undeal_ids) 
+        elif c.lower()=='r':
+          print "正在刷新信息..."
+          continue
         else:
-          price=float(price)
-        process_order(bc_deal,cc,price,"sell")
-      elif c.lower()=='b':
-        cc = raw_input('\r请输入您要买入的比特币数量: ')
-        price = raw_input('请您出价,当前价格请直接按ENTER: ')
-        cc=float(cc)
-        if price=="":
-            price="current"
-        else:
-           price=float(price)
-        process_order(bc_deal,cc,price,"buy")
-      elif c.lower()=='c':
-        cc = raw_input('\r请输入您要取消的挂单id: ')
-        cc = int(cc)
-        cancel_order(bc_deal,cc)
-      elif c.lower()=='ss' or c.lower()=='sss':
-        res=bc.get_account_info()
-        cc=float(res["balance"]["btc"]["amount"])
-        price="current"
-	if c.lower=='ss':
-          process_order(bc_deal,cc,price,"sell")
-        else:
-          process_order(bc_deal,cc,price,"sell","y")
-      elif c.lower()=='cc':
-        print "Fetch your undeal orders..."
-        result = bc.get_orders(None,True)
-        undeal_ids=[o["id"] for o in result["order"]]
-        if len(undeal_ids)>0:
-	 cancel_orders(bc_deal,undeal_ids) 
-      elif c.lower()=='r':
-        print "正在刷新信息..."
-        continue
-      else:
-        print "交易指令不存在！正在返回主菜单..."  
-    except ValueError:
-      print "请检查您的输入是否正确。正在返回主菜单..."
-    except Exception as e:
-      print e
+          print "交易指令不存在！正在返回主菜单..."  
+          time.sleep(1)
+      except ValueError:
+        print "请检查您的输入是否正确。正在返回主菜单..."
+        time.sleep(1)
+      except Exception as e:
+        print e
 
-    time.sleep(1)
+    except Exception as e:
+      print "\n!!!Error: %s ..\nRetring..." % e
+      time.sleep(5)
