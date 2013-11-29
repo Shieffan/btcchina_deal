@@ -53,6 +53,7 @@ def main():
             result = bc.get_account_info()
             if float(result["balance"]["btc"]["amount"]) < 0.001:
                 logger.info("You have no btccoins now...Let me sleep one minute :)")
+                prev_price = 0
                 sleep(60)
             else:
                 amount = float(result["balance"]["btc"]["amount"])
