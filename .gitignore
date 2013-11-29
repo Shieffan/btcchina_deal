@@ -1,2 +1,4 @@
 *.conf
 *.pyc
+*.log
+*.pid
