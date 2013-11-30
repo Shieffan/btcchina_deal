@@ -173,7 +173,7 @@ if __name__ == '__main__':
                     else:
                         process_order(bc_deal,cc,price,"sell","y")
                 elif c.lower()=='cc':
-                    print "Fetch your undeal orders..."
+                    print "\rFetch your undeal orders..."
                     result = bc.get_orders(None,True)
                     undeal_ids=[o["id"] for o in result["order"]]
                     if len(undeal_ids)>0:
