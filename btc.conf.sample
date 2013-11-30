@@ -4,3 +4,7 @@ secret_key=xx-xx-xx-xx
 [deal]
 access_key=xx-xx-xx-xx
 secret_key=xx-xx-xx-xx
+[risk]
+low_sell_ratio = 0.95
+high_sell_ratio = 1.03
+falldown_sell = 100
