@@ -57,7 +57,7 @@ def main():
             LOW_SELL_RATIO = 0.90
             HIGH_SELL_RATIO = 1.05
             FALLDOWN_SELL = 100.0
-        logger.info("\n\r\x1b[1mLOW_SELL_RATIO = %g\n\rHIGH_SELL_RATIO = %g\n\rFALLDOW_SELL = %g\x1b[0m" %(LOW_SELL_RATIO,HIGH_SELL_RATIO,FALLDOWN_SELL))
+        logger.info("x1b[1mLOW_SELL_RATIO = %g; HIGH_SELL_RATIO = %g; FALLDOW_SELL = %g\x1b[0m" %(LOW_SELL_RATIO,HIGH_SELL_RATIO,FALLDOWN_SELL))
         try:
             result = bc.get_account_info()
             if float(result["balance"]["btc"]["amount"]) < 0.001:
