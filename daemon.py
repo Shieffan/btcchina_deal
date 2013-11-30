@@ -9,11 +9,12 @@ import ConfigParser
 import btcchina
 
 
-pid = os.path.join(os.getcwd(),"tmp/daemon.pid") 
+cwd = os.getcwd()
+pid = os.path.join(cwd,"tmp/daemon.pid") 
 logger = logging.getLogger(__name__) 
 logger.setLevel(logging.DEBUG) 
 logger.propagate = False
-fh = logging.FileHandler(os.path.join(os.getcwd(),"tmp/daemon.log"), "a")
+fh = logging.FileHandler(os.path.join(cwd,"tmp/daemon.log"), "a")
 fh.setLevel(logging.DEBUG)
 formatter = logging.Formatter("%(asctime)s;%(levelname)s:%(message)s","%Y-%m-%d %H:%M:%S")
 fh.setFormatter(formatter)
@@ -21,37 +22,22 @@ logger.addHandler(fh)
 keep_fds = [fh.stream.fileno()]
 
 
-
-try:
-    cf = ConfigParser.ConfigParser()
-    cf.read("btc.conf")  
-    info_access_key = cf.get("info", "access_key")
-    info_secret_key = cf.get("info", "secret_key")
-    deal_access_key = cf.get("deal", "access_key")
-    deal_secret_key = cf.get("deal", "secret_key")
-    logger.info("Read config successfully.")
-    try:
-        LOW_SELL_RATIO = float(cf.get("risk", "low_sell_ratio"))
-        LOW_SELL_RATIO = LOW_SELL_RATIO if LOW_SELL_RATIO<1 else 1
-        HIGH_SELL_RATIO = float(cf.get("risk", "high_sell_ratio"))
-        HIGH_SELL_RATIO = HIGH_SELL_RATIO if HIGH_SELL_RATIO>1 else 1
-        FALLDOWN_SELL = float(cf.get("risk", "falldown_sell"))
-        FALLDOWN_SELL = FALLDOWN_SELL if FALLDOWN_SELL>0 else 0
-    except:
-        LOW_SELL_RATIO = 0.90
-        HIGH_SELL_RATIO = 1.05
-        FALLDOWN_SELL = 100.0
-except:
-    logger.error("Parse config file error.Please make sure that btc.conf file exists.")
-
-
-
 def main():
-    global LOW_SELL_RATIO,HIGH_SELL_RATIO,FALLDOWN_SELL
+    try:
+        cf = ConfigParser.ConfigParser()
+        cf.read(os.path.join(cwd,"btc.conf"))  
+        info_access_key = cf.get("info", "access_key")
+        info_secret_key = cf.get("info", "secret_key")
+        deal_access_key = cf.get("deal", "access_key")
+        deal_secret_key = cf.get("deal", "secret_key")
+        logger.info("Read config successfully.")
+    except:
+        logger.error("Parse config file error.Please make sure that btc.conf file exists.")
+   
     bc = btcchina.BTCChina(info_access_key,info_secret_key)
     bc_deal = btcchina.BTCChina(deal_access_key,deal_secret_key)
     logger.info("Daemon Started..")
-    logger.info("\n\r\x1b[1mLOW_SELL_RATIO = %g\n\rHIGH_SELL_RATIO = %g\n\rFALLDOW_SELL = %g\x1b[0m" %(LOW_SELL_RATIO,HIGH_SELL_RATIO,FALLDOWN_SELL))
+
     max_price = 0
     min_price = 0
     t_date = 0
@@ -59,6 +45,19 @@ def main():
     prev_price = 0
     while True:
         logger.info("Refresh info..")
+        try:
+            cf.read(os.path.join(cwd,"btc.conf"))  
+            LOW_SELL_RATIO = float(cf.get("risk", "low_sell_ratio"))
+            LOW_SELL_RATIO = LOW_SELL_RATIO if LOW_SELL_RATIO<1 else 1
+            HIGH_SELL_RATIO = float(cf.get("risk", "high_sell_ratio"))
+            HIGH_SELL_RATIO = HIGH_SELL_RATIO if HIGH_SELL_RATIO>1 else 1
+            FALLDOWN_SELL = float(cf.get("risk", "falldown_sell"))
+            FALLDOWN_SELL = FALLDOWN_SELL if FALLDOWN_SELL>0 else 0
+        except:
+            LOW_SELL_RATIO = 0.90
+            HIGH_SELL_RATIO = 1.05
+            FALLDOWN_SELL = 100.0
+        logger.info("\n\r\x1b[1mLOW_SELL_RATIO = %g\n\rHIGH_SELL_RATIO = %g\n\rFALLDOW_SELL = %g\x1b[0m" %(LOW_SELL_RATIO,HIGH_SELL_RATIO,FALLDOWN_SELL))
         try:
             result = bc.get_account_info()
             if float(result["balance"]["btc"]["amount"]) < 0.001:
