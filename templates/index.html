@@ -111,6 +111,12 @@
   <li>LOW_SELL_RATIO={{ config["LOW_SELL_RATIO"] }}</li>
   <li>HIGH_SELL_RATIO={{ config["HIGH_SELL_RATIO"] }}</li>
   <li>FALLDOWN_SELL={{ config["FALLDOWN_SELL"] }} RMB</li>
+  {% if config["LOW_SELL_PRICE"] %}
+  <li>LOW_SELL_PRICE={{ config["LOW_SELL_PRICE"] }} RMB</li>
+  {% endif %}
+  {% if config["HIGH_SELL_PRICE"] %}
+  <li>HIGH_SELL_PRICE={{ config["HIGH_SELL_PRICE"] }} RMB</li>
+  {% endif %}
 </ul>
 {% else %}
   <p>Read Config Error!</p>
@@ -128,6 +134,14 @@
   <p>
     <label for="fall">New Falldown Sell:</label>
     <input type="text" name="fall" value="{{ config["FALLDOWN_SELL"] }}" />
+  </p>
+  <p>
+    <label for="fall">New Low Sell Price:</label>
+    <input type="text" name="low_p" value="{{ config["LOW_SELL_PRICE"] }}" />{% if not config["LOW_SELL_PRICE"] %}( Not Set ){% endif %}
+  </p>
+  <p>
+    <label for="fall">New High Sell Price:</label>
+    <input type="text" name="high_p" value="{{ config["HIGH_SELL_PRICE"] }}" />{% if not config["HIGH_SELL_PRICE"] %}( Not Set ){% endif %}
   </p>
   <p>
      <button value="Update" id="update_btn">Update</button>
@@ -219,6 +233,8 @@
     low = $('input[name="low"]').val();
     high = $('input[name="high"]').val();
     fall = $('input[name="fall"]').val();
+    low_p = $('input[name="low_p"]').val();
+    high_p = $('input[name="high_p"]').val();
     $.ajax({
         type: "post",
         timeout: 20000,
@@ -226,7 +242,9 @@
         data:{
           low:low,
           high:high,
-          fall:fall
+          fall:fall,
+          low_p:low_p,
+          high_p:high_p
         },
         dataType: "json",
         url: "{{ url_for('updateConfig') }}",

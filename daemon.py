@@ -59,6 +59,16 @@ def main():
             FALLDOWN_SELL = 100.0
         logger.info("\x1b[1mLOW_SELL_RATIO = %g; HIGH_SELL_RATIO = %g; FALLDOW_SELL = %g;\x1b[0m" %(LOW_SELL_RATIO,HIGH_SELL_RATIO,FALLDOWN_SELL))
         try:
+            LOW_SELL_PRICE = float(cf.get("risk", "low_sell_price"))
+        except:
+            LOW_SELL_PRICE = None
+        try:
+            HIGH_SELL_PRICE = float(cf.get("risk","high_sell_price"))
+        except:
+            HIGH_SELL_PRICE = None
+
+        logger.info("\x1b[1mLOW_SELL_PRICE = %s; HIGH_SELL_PRICE = %s;\x1b[0m" %(LOW_SELL_PRICE,HIGH_SELL_PRICE))
+        try:
             result = bc.get_account_info()
             if float(result["balance"]["btc"]["amount"]) < 0.001:
                 logger.info("You have no btccoins now...Let me sleep one minute :)\n")
@@ -101,7 +111,34 @@ def main():
                 if is_min==True:
                     logger.info("\n\r\033[1m\033[31m##The price fell down to the lowest price %g since your last buy transaction.\x1b[0m" % (min_price))
                 
-                
+                if LOW_SELL_PRICE:
+                    if cur_price<LOW_SELL_PRICE:
+                        logger.info("\n\r\033[1;31m$$_Ratio: %g; Current bid price %g; LOW_SELL_PRICE: %g;\n\rFuck, selling all %g bitcons.\x1b[0m" % (ratio,cur_price,LOW_SELL_PRICE,amount))
+                        res = bc_deal.sell(str(cur_price-0.1),str(amount-0.00001))
+                        if res==True:
+                            logger.info("$~_Commit order successfully！\n")
+                            prev_price = 0
+                            continue
+                        else:
+                            try:
+                                logger.warning("\033[1;31m$!_Failed, server says： %s \x1b[0m\n" % res["message"])
+                            except:
+                                logger.error("\033[1;31m$!_Failed, unknow error! \x1b[0m\n")
+
+                if HIGH_SELL_PRICE:
+                    if cur_price>HIGH_SELL_PRICE:
+                        logger.info("\n\r\033[1;32m$$_Ratio: %g; Current bid price %g; HIGH_SELL_PRICE: %g;\n\rNice, selling all %g bitcons.\x1b[0m" % (ratio,cur_price,HIGH_SELL_PRICE,amount))
+                        res = bc_deal.sell(str(cur_price-0.1),str(amount-0.00001))
+                        if res==True:
+                            logger.info("$~_Commit order successfully！\n")
+                            prev_price = 0
+                            continue
+                        else:
+                            try:
+                                logger.warning("\033[1;31m$!_Failed, server says： %s \x1b[0m\n" % res["message"])
+                            except:
+                                logger.error("\033[1;31m$!_Failed, unknow error! \x1b[0m\n")
+
                 if ratio <= LOW_SELL_RATIO:
                     #SELL ALL
                     logger.info("\n\r\033[1;31m$$_Ratio: %g; Current bid price %g; Your last buybtc price %g; LOW_SELL_RATIO: %g;\n\rFuck, selling all %g bitcons.\x1b[0m" % (ratio,cur_price,last_price,LOW_SELL_RATIO,amount))
