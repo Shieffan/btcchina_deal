@@ -29,7 +29,7 @@ def before_request():
         if request.is_xhr:
             return jsonify(code=-2,message="You are not logged in.")
         else:
-            return render_template('login.html')
+            return redirect(url_for('login'))
 
 
 
@@ -88,7 +88,7 @@ def get_info():
             message = "<p>%s, you currently have %g bitcoins and %g RMB, frozen %g bitcoins, %g RMB.</p>" % (title,float(btc_amount),float(cny_amount),float(f_btc_amount),float(f_cny_amount))
             code = 0
         except:
-            message = "Something wrong happened."
+            message = "Something wrong happened"
             code = -1
 
         return jsonify(message=message,code=code)
@@ -106,7 +106,7 @@ def get_price():
             message = "<ul><li>Bid Price: %g</li><li>Ask Price: %g</li></ul>" % (bid_price,ask_price)
             code = 0
         except:
-            message = "Something wrong happened."
+            message = "Something wrong happened"
             code = -1
 
         return jsonify(message=message,code=code)
@@ -127,7 +127,7 @@ def get_undeal_orders():
                 message="You have no undeal orders"
                 return jsonify(code=1,message=message)
         except:
-            message = "Something wrong happened."
+            message = "Something wrong happened"
             return jsonify(message=message,code=-1)
 
     else:
