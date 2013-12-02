@@ -121,7 +121,7 @@
 {% else %}
   <p>Read Config Error!</p>
 {% endif %}
-<h3>Update Config:</h3>
+<h3>Update Config:<p id="update_status" class="status"></p></h3>
 <div>
   <p>
     <label for="low">New Low Sell Ratio:</label>
@@ -146,7 +146,6 @@
   <p>
      <button value="Update" id="update_btn">Update</button>
   </p>
-  <p id="update_status" class="status"></p>
 </div>
 </div>
 </body>
@@ -258,8 +257,8 @@
             $('#update_status').removeClass("success").addClass("fail").html(data.message);
           }
           window.setTimeout(function(){
-            $('#update_status').fadeOut("normal");
-          },2000);
+            window.location.reload();
+          },1500);
         },
         error: function(XMLHttpRequest,textStatus){
           $('#update_status').removeClass("success").addClass("fail").html(textStatus);
