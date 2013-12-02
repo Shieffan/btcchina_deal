@@ -96,6 +96,14 @@
   <ul>
     <li>Bid Price:...</li>
     <li>Ask Price:...</li>
+    <li>Current Ratio:...</li>
+  </ul>
+</div>
+<h3>Last Transaction:<span id="transaction_status" class="status"></span></h3>
+<div id="transaction_info">
+  <ul>
+    <li>BuyBtc:...</li>
+    <li>SellBtc:...</li>
   </ul>
 </div>
 <h3>Undeal Orders:<span id="undeal_status" class="status"></span></h3>
@@ -230,6 +238,27 @@
     });
   }
 
+  function refresh_transactions(){
+    $.ajax({
+        type: "get",
+        timeout: 20000,
+        cache: false,
+        dataType: "json",
+        url: "{{ url_for('get_transactions') }}",
+        beforeSend: function(XMLHttpRequest){
+          $('#transaction_status').removeClass("fail").html("Refreshing...");
+        },
+        success: function(data, textStatus){
+          $('#transaction_status').html("Updated <em class='time'>0</em> seconds ago..");
+          $('#transaction_info').html(data.message);
+        },
+        error: function(XMLHttpRequest,textStatus){
+          $('#transaction_status').addClass('fail').html(textStatus+",updated <em class='time'>0</em> seconds ago..");
+        }
+    });
+
+  }
+
 
   function update_config(){
     low = $('input[name="low"]').val();
@@ -349,6 +378,8 @@
       window.setInterval(refresh_info,30000);
       refresh_price();
       window.setInterval(refresh_price,10000);
+      refresh_transactions();
+      window.setInterval(refresh_transactions,60000);
       refresh_undeal_orders();
       window.setInterval(refresh_undeal_orders,20000);
 

@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 import ConfigParser
+import datetime
 import btcchina
 from flask import Flask,render_template,request,flash,redirect,url_for,jsonify,session,g
 
@@ -118,7 +119,34 @@ def get_price():
             result = g.bc.get_market_depth()
             bid_price = result["market_depth"]['bid'][0]["price"]
             ask_price = result["market_depth"]['ask'][0]["price"]
-            message = "<ul><li>Bid Price: %g</li><li>Ask Price: %g</li></ul>" % (bid_price,ask_price)
+            result = g.bc.get_transactions("buybtc",1)
+            t = result["transaction"][0]
+            last_price = abs(float(t["cny_amount"])/float(t["btc_amount"]))
+            ratio = float(bid_price/last_price)
+            message = "<ul><li>Bid Price: %g</li><li>Ask Price: %g</li><li>Current Ratio: %g</li></ul>" % (bid_price,ask_price,ratio)
+            code = 0
+        except:
+            message = "Something wrong happened"
+            code = -1
+
+        return jsonify(message=message,code=code)
+
+    else:
+        return "Illegal Request."
+
+@app.route('/get_transactions',methods=['GET'])
+def get_transactions():
+    if request.is_xhr:
+        try:
+            t_buy = g.bc.get_transactions("buybtc",1)
+            t_buy = t_buy["transaction"][0]
+            t_buy_time = datetime.datetime.fromtimestamp(t_buy["date"]).strftime('%Y-%m-%d %H:%M:%S')
+
+            t_sell = g.bc.get_transactions("sellbtc",1)
+            t_sell = t_sell["transaction"][0]
+            t_sell_time = datetime.datetime.fromtimestamp(t_sell["date"]).strftime('%Y-%m-%d %H:%M:%S')
+
+            message = "<ul><li>BuyBtc: At %s, %g bitcoins, price %g, totally %g RMB</li><li>SellBtc: At %s, %g bitcoins, price %g, totally %g RMB</li></ul>" % (t_buy_time,abs(float(t_buy["btc_amount"])),abs(float(t_buy["cny_amount"])/float(t_buy["btc_amount"])),abs(float(t_buy["cny_amount"])),t_sell_time,abs(float(t_sell["btc_amount"])),abs(float(t_sell["cny_amount"])/float(t_sell["btc_amount"])),abs(float(t_sell["cny_amount"])))
             code = 0
         except:
             message = "Something wrong happened"
