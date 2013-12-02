@@ -1,0 +1,343 @@
+<!doctype html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Hello from myBTC</title>
+<style type="text/css">
+    .flash-success{
+        color:green;
+        font-size: 0.8em;
+    }
+    .flash-fail{
+        color:red;
+        font-size: 0.8em;
+    }
+    h3{
+      margin:1.2em 0 0.5em 0;
+    }
+    .status{
+      font-weight: normal;
+      padding-left: 5px;
+      font-size:0.8em;
+      color:rgb(0, 141, 11);
+    }
+    .success{
+      color:green;
+    }
+    .fail{
+      color:red;
+    }
+    p{
+      margin-left: 1em;
+    }
+    ul{
+      margin: 0.35em 0;
+    }
+    li{
+      padding: 0.35em 0;
+    }
+    em{
+      font-style: normal;
+    }
+    table {
+      border-collapse: separate;
+      border-spacing: 0;
+      border: 1px solid #cdcdcd;
+      border-width: 1px 0px 0px 1px;
+    }
+    td {
+      white-space: nowrap;
+      background: #fff;
+      padding: 0.6em 0.75em;
+      color: #000;
+      font-size: 0.8em;
+      line-height: 1.2;
+      border: 1px solid #cdcdcd;
+      border-width: 0px 1px 1px 0px;
+      text-align: center;
+    }
+    th {
+      white-space: nowrap;
+      background: #e6e6e6;
+      padding: 0.6em 0.75em;
+      color: #333;
+      font-size: 0.8em;
+      line-height: 1.2;
+      border: 1px solid #cdcdcd;
+      border-width: 0px 1px 1px 0px;
+      font-weight: normal;
+      text-align: center;
+    }
+    a{
+      text-decoration: none;
+    }
+    a:hover{
+      color:#F50;
+    }
+
+</style>
+</head>
+<body>
+<div class="page">
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <p class="flash-{{ category }}">{{ message }}</p>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+<h3>Account Info:<span id="account_status" class="status"></span></h3>
+<div id="account_info"><p>I'm fucking loading...</p></div>
+<h3>Current Price:<span id="price_status" class="status"></span></h3>
+<div id="price_info">
+  <ul>
+    <li>Bid Price:...</li>
+    <li>Ask Price:...</li>
+  </ul>
+</div>
+<h3>Undeal Orders:<span id="undeal_status" class="status"></span></h3>
+<div id="undeal_orders">
+  <table> 
+    <tbody>
+    </tbody>
+  </table>
+</div>
+<h3>Take Action:</h3>
+<p id="sell_status" class="status"></p>
+<p>Sell all your bitcoins at current price ? <button id="sell_btn" value="Do it !">Do it !</button></p> 
+{% if config %}
+<h3>Config List:</h3>
+<ul class="list">
+  <li>LOW_SELL_RATIO={{ config["LOW_SELL_RATIO"] }}</li>
+  <li>HIGH_SELL_RATIO={{ config["HIGH_SELL_RATIO"] }}</li>
+  <li>FALLDOWN_SELL={{ config["FALLDOWN_SELL"] }} RMB</li>
+</ul>
+{% else %}
+  <p>Read Config Error!</p>
+{% endif %}
+<h3>Update Config:</h3>
+<div>
+  <p>
+    <label for="low">New Low Sell Ratio:</label>
+    <input type="text" name="low" value="{{ config["LOW_SELL_RATIO"]  }}"/>
+  </p>
+  <p>
+    <label for="high">New High Sell Ratio:</label>
+    <input type="text" name="high" value="{{ config["HIGH_SELL_RATIO"] }}"/>
+  </p>
+  <p>
+    <label for="fall">New Falldown Sell:</label>
+    <input type="text" name="fall" value="{{ config["FALLDOWN_SELL"] }}" />
+  </p>
+  <p>
+     <button value="Update" id="update_btn">Update</button>
+  </p>
+  <p id="update_status" class="status"></p>
+</div>
+</div>
+</body>
+<script type="text/javascript" src="http://libs.baidu.com/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript">
+  function refresh_info(){
+    $.ajax({
+        type: "get",
+        timeout: 20000,
+        cache: false,
+        dataType: "json",
+        url: "{{ url_for('get_info') }}",
+        beforeSend: function(XMLHttpRequest){
+          $('#account_status').removeClass("fail").html("Refreshing...");
+        },
+        success: function(data, textStatus){
+          $('#account_status').html("Updated <em class='time'>0</em> seconds ago..");
+          $('#account_info').html(data.message);
+        },
+        error: function(XMLHttpRequest,textStatus){
+          $('#account_status').addClass('fail').html(textStatus+",updated <em class='time'>0</em> seconds ago..");
+        }
+    });
+  }
+
+  function refresh_price(){
+    $.ajax({
+        type: "get",
+        timeout: 20000,
+        cache: false,
+        dataType: "json",
+        url: "{{ url_for('get_price') }}",
+        beforeSend: function(XMLHttpRequest){
+          $('#price_status').removeClass("fail").html("Refreshing...");
+        },
+        success: function(data, textStatus){
+          $('#price_status').html("Updated <em class='time'>0</em> seconds ago..");
+          $('#price_info').html(data.message);
+        },
+        error: function(XMLHttpRequest,textStatus){
+          $('#price_status').addClass('fail').html(textStatus+",updated <em class='time'>0</em> seconds ago..");
+        }
+    });
+  }
+
+  function refresh_undeal_orders(){
+    $.ajax({
+        type: "get",
+        timeout: 20000,
+        cache: false,
+        dataType: "json",
+        url: "{{ url_for('get_undeal_orders') }}",
+        beforeSend: function(XMLHttpRequest){
+          $('#undeal_status').removeClass("fail").html("Refreshing...");
+        },
+        success: function(data, textStatus){
+          if(data.code==0){
+            $('#undeal_status').html("Updated <em class='time'>0</em> seconds ago..");
+            
+            var str="<tr><th>Order Type</th><th>Price</th><th>Amount</th><th>Origin</th><th>Date</th><th>Action</th></tr>"
+            for(var i in data.orders){
+              var order = data.orders[i];
+              var date = new Date(order.date*1000);
+              date = date.getFullYear().toString()+'-'+date.getMonth()+'-'+date.getDate()+" " + date.getHours()+":"+date.getMinutes();
+              str += "<tr><td>"+order.type+"</td><td>"+parseFloat(order.price)+"</td><td>"+parseFloat(order.amount)+"</td><td>"+parseFloat(order.amount_original)+"</td><td>"+date+"</td><td><a href='javascript:void(0)' data-id='"+order.id+"' class='del_order'>Cancel</a></td></tr>";
+            }
+
+            $("#undeal_orders tbody").html(str);
+
+          }else if(data.code==1){
+            $('#undeal_status').html(data.message+",updated <em class='time'>0</em> seconds ago..");
+          }else{
+            $('#undeal_status').addClass('fail').html(data.message+",updated <em class='time'>0</em> seconds ago..");
+          }
+        },
+        error: function(XMLHttpRequest,textStatus){
+          $('#undeal_status').addClass('fail').html(textStatus +",updated <em class='time'>0</em> seconds ago..");
+        }
+    });
+  }
+
+
+  function update_config(){
+    low = $('input[name="low"]').val();
+    high = $('input[name="high"]').val();
+    fall = $('input[name="fall"]').val();
+    $.ajax({
+        type: "post",
+        timeout: 20000,
+        cache: false,
+        data:{
+          low:low,
+          high:high,
+          fall:fall
+        },
+        dataType: "json",
+        url: "{{ url_for('updateConfig') }}",
+        beforeSend: function(XMLHttpRequest){
+          $('#update_status').removeClass("fail success").html("Updating...").show();
+        },
+        success: function(data, textStatus){
+          if(data.code==0){
+            $('#update_status').removeClass("fail").addClass("success").html(data.message);
+          }else{
+            $('#update_status').removeClass("success").addClass("fail").html(data.message);
+          }
+          window.setTimeout(function(){
+            $('#update_status').fadeOut("normal");
+          },2000);
+        },
+        error: function(XMLHttpRequest,textStatus){
+          $('#update_status').removeClass("success").addClass("fail").html(textStatus);
+          window.setTimeout(function(){
+            $('#update_status').fadeOut("normal");
+          },2000);
+        }
+        
+    });
+  }
+
+  function sell_all(){
+    if(confirm("Are you sure ?")){
+      $.ajax({
+          type: "post",
+          timeout: 30000,
+          cache: false,
+          dataType: "json",
+          url: "{{ url_for('sell_all') }}",
+          beforeSend: function(XMLHttpRequest){
+            $('#sell_status').removeClass("fail success").html("Committing...").show();
+          },
+          success: function(data, textStatus){
+            if(data.code==0){
+              $('#sell_status').removeClass("fail").addClass("success").html(data.message);
+              refresh_undeal_orders();
+            }else{
+              $('#sell_status').removeClass("success").addClass("fail").html(data.message);
+            }
+            window.setTimeout(function(){
+              $('#sell_status').fadeOut("normal");
+            },2000);
+          },
+          error: function(XMLHttpRequest,textStatus){
+            $('#sell_status').removeClass("success").addClass("fail").html(textStatus);
+            window.setTimeout(function(){
+              $('#sell_status').fadeOut("normal");
+            },2000);
+          }
+          
+      });
+    }
+  }
+
+  function cancel_order(){
+    var order_id=$(this).data('id');
+    var that=this;
+    $.ajax({
+        type: "post",
+        timeout: 30000,
+        data:{
+          id:order_id
+        },
+        cache: false,
+        dataType: "json",
+        url: "{{ url_for('cancel_order') }}",
+        beforeSend: function(XMLHttpRequest){
+          $(that).html('Cancelling..')
+        },
+        success: function(data, textStatus){
+          if(data.code==0){
+            $(that).parents('tr').remove();
+          }else{
+             $(that).html('Cancel');
+             $('#undeal_status').addClass('fail').html(data.message);
+          }
+          
+        },
+        error: function(XMLHttpRequest,textStatus){
+          $(that).html('Cancel');
+          $('#undeal_status').addClass('fail').html("Cancel order failed: " + textStatus);
+        }
+        
+    });
+  }
+
+  function update_time(){
+    $(".time").each(function(){
+       $(this).html(parseInt($(this).html())+1)
+    })
+  }
+
+  $(document).ready(function(){
+      refresh_info();
+      window.setInterval(refresh_info,30000);
+      refresh_price();
+      window.setInterval(refresh_price,10000);
+      refresh_undeal_orders();
+      window.setInterval(refresh_undeal_orders,20000);
+
+      $('#update_btn').bind('click',update_config);
+      $("#sell_btn").bind('click',sell_all);
+      $("#undeal_orders tbody").on("click", 'a.del_order', cancel_order);
+
+      window.setInterval(update_time,1000)
+  });
+  
+
+</script>
+</html>

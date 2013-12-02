@@ -1,0 +1,26 @@
+<!doctype html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Login myBTC</title>
+</head>
+<body>
+<div class="page">
+{% if message %}
+<p>{{ message }}</p>
+{% endif %}
+<form action="{{ url_for('login') }}" method="post">
+  <p>
+    <label for="name">Username:</label>
+    <input type="text" name="name" value=""/>
+  </p>
+  <p>
+    <label for="password">Password:</label>
+    <input type="text" name="password" value=""/>
+  </p>
+  <p>
+     <input type="submit" name="submit" value="Login" />
+  </p>
+</form>
+</div>
+</body>
+</html>
