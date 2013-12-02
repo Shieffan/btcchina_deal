@@ -79,7 +79,7 @@ class BTCChina():
                     return resp_dict['error']
         else:
             # not great error handling....
-            raise Exception("\n\tStatus: %s\n\tReason: %s" % (response.status,response.reason))
+            raise Exception("Status: %s\nReason: %s" % (response.status,response.reason))
             #print "status:",response.status
             #print "reason:",response.reason
  

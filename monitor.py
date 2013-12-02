@@ -9,6 +9,11 @@ import ConfigParser
 from prettytable import PrettyTable
 import btcchina
 
+default_encoding = 'utf-8'
+if sys.getdefaultencoding() != default_encoding:
+    reload(sys)
+    sys.setdefaultencoding(default_encoding)
+
 try:
     cf = ConfigParser.ConfigParser()
     cf.read("btc.conf")
@@ -20,7 +25,12 @@ secret_key = cf.get("info", "secret_key")
 
 def generate_info(bc):
     result = bc.get_account_info()
-    message = result["profile"]["username"].title()+",you now have "+"{:g}".format(float(result["balance"]["btc"]["amount"])) + " bitcons.\n"
+    title = result["profile"]["username"].title()
+    btc_amount = result["balance"]["btc"]["amount"] or 0
+    cny_amount = result["balance"]["cny"]["amount"] or 0
+    f_btc_amount = result["frozen"]["btc"]["amount"] or 0
+    f_cny_amount = result["frozen"]["cny"]["amount"] or 0
+    message = "%s, you currently have %g bitcoins and %g RMB, frozen %g bitcoins,%g RMB.\n" % (title,float(btc_amount),float(cny_amount),float(f_btc_amount),float(f_cny_amount))
     result = bc.get_transactions("all",1)
     t = result["transaction"][0]
     price = abs(float(t["cny_amount"])/float(t["btc_amount"]))
@@ -29,7 +39,7 @@ def generate_info(bc):
     return message
 
 def refresh_price(bc):
-    print "Fetching the newest market depth...",
+    sys.stdout.write("Fetching the newest market depth...")
     sys.stdout.flush()
     result = bc.get_market_depth()
     x = PrettyTable(["Bid", "Bid Amount", "Ask", "Ask Amount"])
@@ -41,7 +51,7 @@ def refresh_price(bc):
     print "Market depth updated at " + time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))
 
 def refresh_undeal_orders(bc):
-    print "Fetching your undeal orders...",
+    sys.stdout.write("Fetching your undeal orders...")
     sys.stdout.flush()
     result = bc.get_orders(None,True)
     if len(result["order"]):
@@ -51,10 +61,11 @@ def refresh_undeal_orders(bc):
         for o in result["order"]:
             x.add_row([o["type"],o["price"],"{:g}".format(float(o["amount"])),"{:g}".format(float(o["amount_original"])),o["id"]])
         print '\r'+x.get_string(sortby="Order Type")
-        print "Undeal Order updated at " + time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))
+        sys.stdout.write("Undeal Order updated at " + time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time())))
+        sys.stdout.flush()
     else:
-        time.sleep(1)
-        print "\rYou have no undeal orders till " + time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))
+        sys.stdout.write("\rYou have no undeal orders till " + time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time())))
+        sys.stdout.flush()
 
 if __name__ == '__main__':
     bc = btcchina.BTCChina(access_key,secret_key)
@@ -68,9 +79,9 @@ if __name__ == '__main__':
             refresh_undeal_orders(bc)
             time.sleep(15)
             i+=1
-            if i>=5:
+            if i>=2:
                 info = generate_info(bc)
                 i=0
         except Exception as e:
             print "\n!!!Error: %s ..\nRetring..." % e
-            time.sleep(5)
+            time.sleep(2)

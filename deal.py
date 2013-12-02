@@ -127,20 +127,14 @@ if __name__ == '__main__':
                                 \r\tss: 以当前价卖出所有的比特币(sss不确认直接卖出)
                                 \r\tcc: 取消所有挂单
                                 \r\tr: 刷新信息'''    %(Fore.RESET,title,float(btc_amount),float(cny_amount),float(f_btc_amount),float(f_cny_amount),float(bid_price),float(ask_price))
-            timeout = 60
-            print "\r请输入您要执行的操作: ",
-            sys.stdout.flush()
-            c, _, _ = select([sys.stdin], [], [], timeout)
-            if c:
-                c = sys.stdin.readline()
-            else:
-                print Style.BRIGHT+Fore.YELLOW+"输入超时，刷新菜单ing..."+Style.RESET_ALL
-                continue
-            c=c.strip()
+
+            c = raw_input('\r请输入您要执行的操作: ')
+            c = c.strip()
+            
             try:
                 if c.lower()=='s':
                     cc = raw_input('\r请输入您要卖出的比特币数量，全部卖出请直接按ENTER: ')
-                    price = raw_input('请您出价,当前价格请直接按ENTER: ')
+                    price = raw_input('\r请您出价,当前价格请直接按ENTER: ')
                     if cc=="":
                         res=bc.get_account_info()
                         cc=float(res["balance"]["btc"]["amount"])
@@ -153,7 +147,7 @@ if __name__ == '__main__':
                     process_order(bc_deal,cc,price,"sell")
                 elif c.lower()=='b' or c.lower()=='':
                     cc = raw_input('\r请输入您要买入的比特币数量: ')
-                    price = raw_input('请您出价,当前价格请直接按ENTER: ')
+                    price = raw_input('\r请您出价,当前价格请直接按ENTER: ')
                     cc=float(cc)
                     if price=="":
                             price="current"
@@ -179,7 +173,7 @@ if __name__ == '__main__':
                     if len(undeal_ids)>0:
                         cancel_orders(bc_deal,undeal_ids) 
                 elif c.lower()=='r':
-                    print "\r正在刷新信息..."
+                    print Style.BRIGHT + Fore.YELLOW+"\r正在刷新信息..."+ Style.RESET_ALL
                     continue
                 else:
                     print "\r交易指令不存在！正在返回主菜单..."
@@ -192,4 +186,4 @@ if __name__ == '__main__':
 
         except Exception as e:
             print "\n!!!Error: %s ..\nRetring..." % e
-            time.sleep(5)
+            time.sleep(1)
