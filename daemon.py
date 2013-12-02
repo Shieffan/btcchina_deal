@@ -47,16 +47,24 @@ def main():
         logger.info("Refresh info..")
         try:
             cf.read(os.path.join(cwd,"btc.conf"))  
+        except:
+            logger.error("Please check if btc.conf exists.")
+        try:
             LOW_SELL_RATIO = float(cf.get("risk", "low_sell_ratio"))
             LOW_SELL_RATIO = LOW_SELL_RATIO if LOW_SELL_RATIO<1 else 1
+        except:
+            LOW_SELL_RATIO = 0
+        try:
             HIGH_SELL_RATIO = float(cf.get("risk", "high_sell_ratio"))
             HIGH_SELL_RATIO = HIGH_SELL_RATIO if HIGH_SELL_RATIO>1 else 1
+        except:
+            HIGH_SELL_RATIO = 0
+        try:
             FALLDOWN_SELL = float(cf.get("risk", "falldown_sell"))
             FALLDOWN_SELL = FALLDOWN_SELL if FALLDOWN_SELL>0 else 0
         except:
-            LOW_SELL_RATIO = 0.90
-            HIGH_SELL_RATIO = 1.05
-            FALLDOWN_SELL = 100.0
+            FALLDOWN_SELL = 0
+        
         logger.info("\x1b[1mLOW_SELL_RATIO = %g; HIGH_SELL_RATIO = %g; FALLDOW_SELL = %g;\x1b[0m" %(LOW_SELL_RATIO,HIGH_SELL_RATIO,FALLDOWN_SELL))
         try:
             LOW_SELL_PRICE = float(cf.get("risk", "low_sell_price"))
@@ -139,7 +147,7 @@ def main():
                             except:
                                 logger.error("\033[1;31m$!_Failed, unknow error! \x1b[0m\n")
 
-                if ratio <= LOW_SELL_RATIO:
+                if LOW_SELL_RATIO and ratio <= LOW_SELL_RATIO:
                     #SELL ALL
                     logger.info("\n\r\033[1;31m$$_Ratio: %g; Current bid price %g; Your last buybtc price %g; LOW_SELL_RATIO: %g;\n\rFuck, selling all %g bitcons.\x1b[0m" % (ratio,cur_price,last_price,LOW_SELL_RATIO,amount))
                     res = bc_deal.sell(str(cur_price-0.1),str(amount-0.00001))
@@ -153,7 +161,7 @@ def main():
                         except:
                             logger.error("\033[1;31m$!_Failed, unknow error! \x1b[0m\n")
 
-                if ratio >= HIGH_SELL_RATIO:
+                if HIGH_SELL_RATIO and ratio >= HIGH_SELL_RATIO:
                     #SELL ALL
                     logger.info("\n\r\033[1;32m$$_Ratio: %g; Current bid price %g; Your last buybtc price %g; HIGH_SELL_RATIO: %g;\n\rNice, selling all %g bitcons.\x1b[0m" % (ratio,cur_price,last_price,HIGH_SELL_RATIO,amount))
                     res = bc_deal.sell(str(cur_price-0.1),str(amount-0.00001))
@@ -168,7 +176,7 @@ def main():
                             logger.error("\033[1;31m$!_Failed, unknow error! \x1b[0m\n")
                     
 
-                if prev_price - cur_price > FALLDOWN_SELL:
+                if FALLDOWN_SELL and prev_price - cur_price > FALLDOWN_SELL:
                     logger.info("\n\r\033[1m\x1b[32m!!Sorry to sell all your %g bitcoins because its price has fallen down %g RMB in the past 30 seconds.\x1b[0m" % (amount,prev_price - cur_price))
                     try:
                         res = bc_deal.sell(str(cur_price-0.1),str(amount-0.00001))
@@ -182,9 +190,10 @@ def main():
                     prev_price = cur_price
 
                
-                if ratio >= 1:
-                    logger.info("\n\r$#_Ratio:\x1b[1;32m %g\x1b[0m; Current bid price %g; Your last buybtc price %g; HIGH_SELL_RATIO %g;\n\r\033[1m\x1b[33mDo nothing with total %g bitcoins.\x1b[0m\n" % (ratio,cur_price,last_price,LOW_SELL_RATIO,amount))
-                else:
+                if HIGH_SELL_RATIO and ratio >= 1:
+                    logger.info("\n\r$#_Ratio:\x1b[1;32m %g\x1b[0m; Current bid price %g; Your last buybtc price %g; HIGH_SELL_RATIO %g;\n\r\033[1m\x1b[33mDo nothing with total %g bitcoins.\x1b[0m\n" % (ratio,cur_price,last_price,HIGH_SELL_RATIO,amount))
+                
+                if LOW_SELL_RATIO and ratio < 1:
                     logger.info("\n\r$#_Ratio:\x1b[1;31m %g\x1b[0m; Current bid price %g; Your last buybtc price %g; LOW_SELL_RATIO: %g;\n\r\033[1m\x1b[33mDo nothing with total %g bitcoins.\x1b[0m\n" % (ratio,cur_price,last_price,LOW_SELL_RATIO,amount))
 
                 sleep(30)
