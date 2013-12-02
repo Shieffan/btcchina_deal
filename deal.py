@@ -6,7 +6,7 @@ import sys
 import time
 import ConfigParser
 import btcchina
-from colorama import init,Fore
+from colorama import init,Fore,Style
 from select import select
 init(autoreset=True)
 
@@ -100,7 +100,7 @@ def cancel_orders(bc,order_ids):
                     print Fore.RED+"\r操作未完成，服务器返回：" + res["message"]
                 except:
                     print Fore.RED+"\r未知错误，业务未受理!"
-        print "操作已完成,正在返回主菜单..."
+        print "正在返回主菜单..."
     else:
         print "操作已取消，正在返回主菜单..."
 
@@ -134,7 +134,7 @@ if __name__ == '__main__':
             if c:
                 c = sys.stdin.readline()
             else:
-                print Fore.YELLOW+"输入超时，刷新菜单ing..."
+                print Style.BRIGHT+Fore.YELLOW+"输入超时，刷新菜单ing..."+Style.RESET_ALL
                 continue
             c=c.strip()
             try:

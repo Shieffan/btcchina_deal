@@ -2,4 +2,3 @@
 *.pyc
 *.log
 *.pid
-print_price.py

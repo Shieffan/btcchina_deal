@@ -61,7 +61,7 @@ def main():
         try:
             result = bc.get_account_info()
             if float(result["balance"]["btc"]["amount"]) < 0.001:
-                logger.info("You have no btccoins now...Let me sleep one minute :)")
+                logger.info("You have no btccoins now...Let me sleep one minute :)\n")
                 prev_price = 0
                 sleep(60)
             else:
@@ -107,37 +107,40 @@ def main():
                     logger.info("\n\r\033[1;31m$$_Ratio: %g; Current bid price %g; Your last buybtc price %g; LOW_SELL_RATIO: %g;\n\rFuck, selling all %g bitcons.\x1b[0m" % (ratio,cur_price,last_price,LOW_SELL_RATIO,amount))
                     res = bc_deal.sell(str(cur_price-0.1),str(amount-0.00001))
                     if res==True:
-                        logger.info("$~_Commit order successfully！")
+                        logger.info("$~_Commit order successfully！\n")
                         prev_price = 0
                         continue
                     else:
                         try:
-                            logger.warning("\033[1;31m$!_Failed, server says： %s \x1b[0m" % res["message"])
+                            logger.warning("\033[1;31m$!_Failed, server says： %s \x1b[0m\n" % res["message"])
                         except:
-                            logger.error("\033[1;31m$!_Failed, unknow error! \x1b[0m")
+                            logger.error("\033[1;31m$!_Failed, unknow error! \x1b[0m\n")
 
                 if ratio >= HIGH_SELL_RATIO:
                     #SELL ALL
                     logger.info("\n\r\033[1;32m$$_Ratio: %g; Current bid price %g; Your last buybtc price %g; HIGH_SELL_RATIO: %g;\n\rNice, selling all %g bitcons.\x1b[0m" % (ratio,cur_price,last_price,HIGH_SELL_RATIO,amount))
                     res = bc_deal.sell(str(cur_price-0.1),str(amount-0.00001))
                     if res==True:
-                        logger.info("$~_Commit order successfully！")
+                        logger.info("$~_Commit order successfully！\n")
                         prev_price = 0
                         continue
                     else:
                         try:
-                            logger.warning("\033[1;31m$!_Failed, server says： %s \x1b[0m" % res["message"])
+                            logger.warning("\033[1;31m$!_Failed, server says： %s \x1b[0m\n" % res["message"])
                         except:
-                            logger.error("\033[1;31m$!_Failed, unknow error! \x1b[0m")
+                            logger.error("\033[1;31m$!_Failed, unknow error! \x1b[0m\n")
                     
 
                 if prev_price - cur_price > FALLDOWN_SELL:
                     logger.info("\n\r\033[1m\x1b[32m!!Sorry to sell all your %g bitcoins because its price has fallen down %g RMB in the past 30 seconds.\x1b[0m" % (amount,prev_price - cur_price))
-                    res = bc_deal.sell(str(cur_price-0.1),str(amount-0.00001))
-                    if res==True:
-                        logger.info("$~_Commit order successfully！")
-                        prev_price = 0
-                        continue
+                    try:
+                        res = bc_deal.sell(str(cur_price-0.1),str(amount-0.00001))
+                        if res==True:
+                            logger.info("$~_Commit order successfully！\n")
+                            prev_price = 0
+                    except Exception as e:
+                        logger.error("\n!!!Selling error: %s ...\n" % e)
+                    continue
                 else:
                     prev_price = cur_price
 
@@ -150,7 +153,7 @@ def main():
                 sleep(30)
 
         except Exception as e:
-            logger.error("\n!!!Error: %s ..\nRetring..." % e)
+            logger.error("\n!!!Error: %s ..\nRetring...\n" % e)
             prev_price = 0
             sleep(5)
 
@@ -160,4 +163,4 @@ if __name__ == "__main__":
         daemon = Daemonize(app="btcchina", pid=pid, action=main, keep_fds=keep_fds)
         daemon.start()
     except Exception as e:
-         logger.error("Fatal Error:\n\r%s" % e)
+         logger.error("Fatal Error:\n\r%s\n" % e)
