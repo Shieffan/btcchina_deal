@@ -127,23 +127,23 @@
 <h3>Update Config:<p id="update_status" class="status"></p></h3>
 <div>
   <p>
-    <label for="low">New Low Sell Ratio:</label>
+    <label for="low">Low Sell Ratio:</label>
     <input type="text" name="low" value="{{ config["LOW_SELL_RATIO"]  }}"/>
   </p>
   <p>
-    <label for="high">New High Sell Ratio:</label>
+    <label for="high">High Sell Ratio:</label>
     <input type="text" name="high" value="{{ config["HIGH_SELL_RATIO"] }}"/>
   </p>
   <p>
-    <label for="fall">New Falldown Sell:</label>
+    <label for="fall">Falldown Sell:</label>
     <input type="text" name="fall" value="{{ config["FALLDOWN_SELL"] }}" />
   </p>
   <p>
-    <label for="fall">New Low Sell Price:</label>
+    <label for="fall">Low Sell Price:</label>
     <input type="text" name="low_p" value="{{ config["LOW_SELL_PRICE"] }}" />{% if not config["LOW_SELL_PRICE"] %}( Not Set ){% endif %}
   </p>
   <p>
-    <label for="fall">New High Sell Price:</label>
+    <label for="fall">High Sell Price:</label>
     <input type="text" name="high_p" value="{{ config["HIGH_SELL_PRICE"] }}" />{% if not config["HIGH_SELL_PRICE"] %}( Not Set ){% endif %}
   </p>
   <p>
