@@ -66,26 +66,37 @@ def index():
     try:
         cf = ConfigParser.ConfigParser()
         cf.read("btc.conf")
-        config = {}
+    except:
+        return "Read config file error.Please make sure that btc.conf file exists and synatax right."
+
+    config = {}
+    
+    try:
         LOW_SELL_RATIO = float(cf.get("risk", "low_sell_ratio"))
-        config["LOW_SELL_RATIO"] = LOW_SELL_RATIO if LOW_SELL_RATIO<1 else 1
+        config["LOW_SELL_RATIO"] = LOW_SELL_RATIO if LOW_SELL_RATIO<1 else 0
+    except:
+        config["LOW_SELL_RATIO"] = 0
+    try:
         HIGH_SELL_RATIO = float(cf.get("risk", "high_sell_ratio"))
-        config["HIGH_SELL_RATIO"] = HIGH_SELL_RATIO if HIGH_SELL_RATIO>1 else 1
+        config["HIGH_SELL_RATIO"] = HIGH_SELL_RATIO if HIGH_SELL_RATIO>1 else 0
+    except:
+        config["HIGH_SELL_RATIO"] = 0
+    try:
         FALLDOWN_SELL = float(cf.get("risk", "falldown_sell"))
         config["FALLDOWN_SELL"] = FALLDOWN_SELL if FALLDOWN_SELL>0 else 0
     except:
-        return "Read config file error.Please make sure that btc.conf file exists and synatax right."
-    try:
-        LOW_SELL_PRICE = float(cf.get("risk", "low_sell_price"))
-        config["LOW_SELL_PRICE"] = LOW_SELL_PRICE
-    except:
-        config["LOW_SELL_PRICE"] = 0
+        config["FALLDOWN_SELL"] = 0
 
     try:
+        LOW_SELL_PRICE = float(cf.get("risk", "low_sell_price"))
+    except:
+        config["LOW_SELL_PRICE"] = 0
+        
+    try:
         HIGH_SELL_PRICE = float(cf.get("risk","high_sell_price"))
-        config["HIGH_SELL_PRICE"] = HIGH_SELL_PRICE
     except:
         config["HIGH_SELL_PRICE"] = 0
+
     
     
     return render_template('index.html',config=config)

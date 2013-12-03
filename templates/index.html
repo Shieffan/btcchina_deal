@@ -119,20 +119,16 @@
 {% if config %}
 <h3>Config List:</h3>
 <ul class="list">
-  <li>LOW_SELL_RATIO={{ config["LOW_SELL_RATIO"] }}</li>
-  <li>HIGH_SELL_RATIO={{ config["HIGH_SELL_RATIO"] }}</li>
-  <li>FALLDOWN_SELL={{ config["FALLDOWN_SELL"] }} RMB</li>
-  {% if config["LOW_SELL_PRICE"] %}
-  <li>LOW_SELL_PRICE={{ config["LOW_SELL_PRICE"] }} RMB</li>
+  {% for key in config %}
+  {% if config[key] %}
+  <li>{{key}}={{config[key]}}</li>
   {% endif %}
-  {% if config["HIGH_SELL_PRICE"] %}
-  <li>HIGH_SELL_PRICE={{ config["HIGH_SELL_PRICE"] }} RMB</li>
-  {% endif %}
+  {% endfor %}
 </ul>
 {% else %}
   <p>Read Config Error!</p>
 {% endif %}
-<h3>Update Config:<p id="update_status" class="status"></p></h3>
+<h3>Update Config:<span id="update_status" class="status"></span></h3>
 <div>
   <p>
     <label for="low">Low Sell Ratio:</label>
