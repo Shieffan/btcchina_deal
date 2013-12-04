@@ -1,10 +1,21 @@
 [info]
 access_key=xx-xx-xx-xx
 secret_key=xx-xx-xx-xx
+
 [deal]
 access_key=xx-xx-xx-xx
 secret_key=xx-xx-xx-xx
+
 [risk]
+#set the value to 0 to unset the option
 low_sell_ratio = 0.95
 high_sell_ratio = 1.03
 falldown_sell = 100
+low_sell_price = 0
+high_sell_price = 0
+
+#If you don't use Flask web interface,ignore below. If you do not know what this means,just ignore.
+[user]
+name=xxx
+pass=yyyy
+
