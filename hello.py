@@ -114,11 +114,12 @@ def get_info():
             f_cny_amount = result["frozen"]["cny"]["amount"] or 0
             message = "<p>%s, you currently have %g bitcoins and %g RMB, frozen %g bitcoins, %g RMB.</p>" % (title,float(btc_amount),float(cny_amount),float(f_btc_amount),float(f_cny_amount))
             code = 0
-        except:
-            message = "Something wrong happened"
+            res={"btc_amount":btc_amount,"cny_amount":cny_amount}
+            return jsonify(message=message,code=code,obj=res)
+        except Exception as e:
+            message = "Something wrong happened: %s" % e
             code = -1
-
-        return jsonify(message=message,code=code)
+            return jsonify(message=message,code=code)
 
     else:
         return "Illegal Request."
@@ -129,18 +130,15 @@ def get_price():
         try:
             result = g.bc.get_market_depth()
             bid_price = result["market_depth"]['bid'][0]["price"]
-            ask_price = result["market_depth"]['ask'][0]["price"]
-            result = g.bc.get_transactions("buybtc",1)
-            t = result["transaction"][0]
-            last_price = abs(float(t["cny_amount"])/float(t["btc_amount"]))
-            ratio = float(bid_price/last_price)
-            message = "<ul><li>Bid Price: %g</li><li>Ask Price: %g</li><li>Current Ratio: %g</li></ul>" % (bid_price,ask_price,ratio)
+            ask_price = result["market_depth"]['ask'][0]["price"]    
+            message = "<li>Bid Price: %g</li><li>Ask Price: %g</li>" % (bid_price,ask_price)
+            res={"bid":bid_price,"ask":ask_price}
             code = 0
-        except:
-            message = "Something wrong happened"
+            return jsonify(message=message,code=code,obj=res)
+        except Exception as e:
+            message = "Something wrong happened: %s" % e
             code = -1
-
-        return jsonify(message=message,code=code)
+            return jsonify(message=message,code=code)
 
     else:
         return "Illegal Request."
@@ -159,11 +157,12 @@ def get_transactions():
 
             message = "<ul><li>BuyBtc: At %s, %g bitcoins, price %g, totally %g RMB</li><li>SellBtc: At %s, %g bitcoins, price %g, totally %g RMB</li></ul>" % (t_buy_time,abs(float(t_buy["btc_amount"])),abs(float(t_buy["cny_amount"])/float(t_buy["btc_amount"])),abs(float(t_buy["cny_amount"])),t_sell_time,abs(float(t_sell["btc_amount"])),abs(float(t_sell["cny_amount"])/float(t_sell["btc_amount"])),abs(float(t_sell["cny_amount"])))
             code = 0
-        except:
-            message = "Something wrong happened"
+            res = {"buy_t":abs(float(t_buy["cny_amount"])/float(t_buy["btc_amount"])),"sell_t":abs(float(t_sell["cny_amount"])/float(t_sell["btc_amount"]))}
+            return jsonify(message=message,code=code,obj=res)
+        except Exception as e:
+            message = "Something wrong happened: %s" % e
             code = -1
-
-        return jsonify(message=message,code=code)
+            return jsonify(message=message,code=code)
 
     else:
         return "Illegal Request."
@@ -175,13 +174,13 @@ def get_undeal_orders():
             result = g.bc.get_orders(None,True)
             if len(result["order"]):
                 orders=result["order"]
-                message = "You have %d undeal orders." % len(result["order"])
+                message = "<p>You have %d undeal orders.</p>" % len(result["order"])
                 return jsonify(code=0,orders=orders,message=message)
             else:
-                message="You have no undeal orders"
+                message="<p>You have no undeal orders.</p>"
                 return jsonify(code=1,message=message)
-        except:
-            message = "Something wrong happened"
+        except Exception as e:
+            message = "Something wrong happened: %s" % e
             return jsonify(message=message,code=-1)
 
     else:

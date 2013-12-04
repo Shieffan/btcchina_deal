@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale = 1.0,maximum-scale = 1.0" />
 <style type="text/css">
     body{
+      font-size:0.875em;
       font-family: "Helvetica Neue", "Luxi Sans", "DejaVu Sans", Tahoma, "Hiragino Sans GB", STHeiti !important;
     }
     .flash-success{
@@ -77,7 +78,44 @@
     a:hover{
       color:#F50;
     }
-
+    label{
+      display: inline-block;
+      width:8em;
+    }
+    input[type="text"]{
+      width:9em;
+    }
+    #big_price{
+      position: fixed;
+      right: 0;
+      bottom: 0;
+      font-size: 10em;
+      font-weight: normal;
+      color: white;
+      background: black;
+      padding:0.1em 0.2em;
+    }
+    #big_price.up{
+      color:rgb(218, 0, 0);
+    }
+    #big_price.down{
+      color:rgb(17, 177, 17);
+    }
+    @media screen and (max-device-width: 480px){
+      #big_price{
+        border-top-left-radius: 2px;
+        font-size: 1.2em;
+        position: fixed;
+        padding:0.2em 0.4em 0.1em 0.5em;
+        right: 0;
+        bottom: 0;
+        text-align: right;
+        font-weight: 500;
+        color: white;
+        background: black;
+      }
+    }
+    
 </style>
 </head>
 <body>
@@ -96,7 +134,6 @@
   <ul>
     <li>Bid Price:...</li>
     <li>Ask Price:...</li>
-    <li>Current Ratio:...</li>
   </ul>
 </div>
 <h3>Last Transaction:<span id="transaction_status" class="status"></span></h3>
@@ -107,6 +144,7 @@
   </ul>
 </div>
 <h3>Undeal Orders:<span id="undeal_status" class="status"></span></h3>
+<div id="undeal_count"></div>
 <div id="undeal_orders">
   <table> 
     <tbody>
@@ -155,6 +193,7 @@
   </p>
 </div>
 </div>
+<div id="big_price"></div>
 </body>
 <script type="text/javascript" src="http://libs.baidu.com/jquery/1.9.1/jquery.min.js"></script>
 <script type="text/javascript">
@@ -169,7 +208,12 @@
           $('#account_status').removeClass("fail").html("Refreshing...");
         },
         success: function(data, textStatus){
-          $('#account_status').html("Updated <em class='time'>0</em> seconds ago..");
+          if(data.code==0){
+            $('#account_status').removeClass("fail").html("Updated <em class='time'>0</em> seconds ago..");
+            _GLOBAL["btc_amount"]=parseFloat(data.obj.btc_amount);
+          }else{
+            $('#account_status').removeClass("success").addClass("fail").html("Failed,updated <em class='time'>0</em> seconds ago..");
+          }
           $('#account_info').html(data.message);
         },
         error: function(XMLHttpRequest,textStatus){
@@ -189,8 +233,29 @@
           $('#price_status').removeClass("fail").html("Refreshing...");
         },
         success: function(data, textStatus){
-          $('#price_status').html("Updated <em class='time'>0</em> seconds ago..");
-          $('#price_info').html(data.message);
+          if(data.code==0){
+            $('#price_status').removeClass("fail").html("Updated <em class='time'>0</em> seconds ago..");
+            if(_GLOBAL["bid"]&&data.obj.bid>_GLOBAL["bid"]){
+              $('#big_price').removeClass("down").addClass("up");
+            }else if(_GLOBAL["bid"]&&data.obj.bid<_GLOBAL["bid"]){
+              $('#big_price').removeClass("up").addClass("down");
+            }else{
+              $('#big_price').removeClass("up down");
+            }
+            $('#big_price').html(data.obj.bid);
+            _GLOBAL["bid"] = data.obj.bid;
+            _GLOBAL["ask"] = data.obj.ask;
+            
+            ratio_li='';
+            if(_GLOBAL["buy_t"]&&_GLOBAL["btc_amount"]){
+              ratio_li = "<li>Current Sell Ratio: "+_GLOBAL["bid"]/_GLOBAL["buy_t"]+"</li>";
+            }
+            $('#price_info').html("<ul>"+data.message+ratio_li+"</ul>");
+          }else{
+            $('#price_status').removeClass("success").addClass("fail").html("Failed,updated <em class='time'>0</em> seconds ago..");
+            $('#price_info').html(data.message);
+          }
+          
         },
         error: function(XMLHttpRequest,textStatus){
           $('#price_status').addClass('fail').html(textStatus+",updated <em class='time'>0</em> seconds ago..");
@@ -219,11 +284,13 @@
               date = date.getFullYear().toString()+'-'+date.getMonth()+'-'+date.getDate()+" " + date.getHours()+":"+date.getMinutes();
               str += "<tr><td>"+order.type+"</td><td>"+parseFloat(order.price)+"</td><td>"+parseFloat(order.amount)+"</td><td>"+parseFloat(order.amount_original)+"</td><td>"+date+"</td><td><a href='javascript:void(0)' data-id='"+order.id+"' class='del_order'>Cancel</a></td></tr>";
             }
-
+            $("#undeal_count").html(data.message);
             $("#undeal_orders tbody").html(str);
 
           }else if(data.code==1){
-            $('#undeal_status').html(data.message+",updated <em class='time'>0</em> seconds ago..");
+            $("#undeal_count").html(data.message);
+            $('#undeal_status').html("Updated <em class='time'>0</em> seconds ago..");
+            $("#undeal_orders tbody").html('');
           }else{
             $('#undeal_status').addClass('fail').html(data.message+",updated <em class='time'>0</em> seconds ago..");
           }
@@ -245,7 +312,13 @@
           $('#transaction_status').removeClass("fail").html("Refreshing...");
         },
         success: function(data, textStatus){
-          $('#transaction_status').html("Updated <em class='time'>0</em> seconds ago..");
+          if(data.code==0){
+            $('#transaction_status').removeClass("fail").html("Updated <em class='time'>0</em> seconds ago..");
+            _GLOBAL["buy_t"] = data.obj.buy_t;
+            _GLOBAL["sell_t"] = data.obj.sell_t;
+          }else{
+            $('#transaction_status').removeClass("success").addClass("fail").html("Failed,updated <em class='time'>0</em> seconds ago..");
+          }
           $('#transaction_info').html(data.message);
         },
         error: function(XMLHttpRequest,textStatus){
@@ -349,6 +422,9 @@
         success: function(data, textStatus){
           if(data.code==0){
             $(that).parents('tr').remove();
+            if($("#undeal_orders tr").length<=1){
+              $("#undeal_orders tr").remove();
+            }
           }else{
              $(that).html('Cancel');
              $('#undeal_status').addClass('fail').html(data.message);
@@ -370,6 +446,7 @@
   }
 
   $(document).ready(function(){
+      _GLOBAL={};
       refresh_info();
       window.setInterval(refresh_info,30000);
       refresh_price();
