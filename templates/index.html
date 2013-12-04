@@ -275,7 +275,7 @@
             }else{
               $('#big_price').removeClass("up down");
             }
-            top.document.title = "Bid:"+data.obj.bid+"; Ask:" + data.obj.ask;
+            top.document.title = "Bid: "+data.obj.bid+", Ask: " + data.obj.ask+" --This is myBTC control.";
             $('#big_price').html(data.obj.bid);
             _GLOBAL["bid"] = data.obj.bid;
             _GLOBAL["ask"] = data.obj.ask;
@@ -506,7 +506,7 @@
       });
 
       window.setInterval(update_time,1000);
-      window.setInterval(rolltitle, 500);
+      window.setInterval(rolltitle, 800);
 
 
   });
