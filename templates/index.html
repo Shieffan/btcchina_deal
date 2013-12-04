@@ -7,6 +7,7 @@
     body{
       font-size:0.875em;
       font-family: "Helvetica Neue", "Luxi Sans", "DejaVu Sans", Tahoma, "Hiragino Sans GB", STHeiti !important;
+      padding-bottom:2em;
     }
     .flash-success{
         color:green;
@@ -72,7 +73,9 @@
       font-weight: normal;
       text-align: center;
     }
+
     a{
+      color:#0F53CA;
       text-decoration: none;
     }
     a:hover{
@@ -89,17 +92,33 @@
       position: fixed;
       right: 0;
       bottom: 0;
-      font-size: 10em;
+      font-size: 1.2em;
       font-weight: normal;
       color: white;
       background: black;
-      padding:0.1em 0.2em;
+      padding:0.35em 0.4em 0.35em 0.5em;
+    }
+    #big_price.bigger{
+      font-size:10em;
+      padding:0.2em 0.3em;
     }
     #big_price.up{
       color:rgb(218, 0, 0);
     }
     #big_price.down{
       color:rgb(17, 177, 17);
+    }
+    div.links ul {
+      margin: 2px 0;
+      padding: 0 0 0 5px;
+      list-style: inside;
+      padding-left:1em;
+    }
+    div.links ul li{
+      font-size:0.95em;
+      list-style-type: square;
+      float: left;
+      margin-right: 2em;
     }
     @media screen and (max-device-width: 480px){
       #big_price{
@@ -114,8 +133,12 @@
         color: white;
         background: black;
       }
+      div.links ul li{
+        list-style-type: square;
+        float: none;
+        margin-right: 2em;
+      }
     }
-    
 </style>
 </head>
 <body>
@@ -144,8 +167,8 @@
   </ul>
 </div>
 <h3>Undeal Orders:<span id="undeal_status" class="status"></span></h3>
-<div id="undeal_count"></div>
-<div id="undeal_orders">
+<div id="undeal_count"><p>Loading undeal order status...</p></div>
+<div id="undeal_orders" style="display:none;">
   <table> 
     <tbody>
     </tbody>
@@ -191,6 +214,15 @@
   <p>
      <button value="Update" id="update_btn">Update</button>
   </p>
+</div>
+<h3>Related Links:</h3>
+<div class="links">
+  <ul>
+    <li><a href="https://vip.btcchina.com/">BTCChina</a></li>
+    <li><a href="http://z.btc123.com/">Bt123 Info</a></li>
+    <li><a href="http://info.btc123.com/index_btcchina.php">BTCChina K Line</a></li>
+    <li><a href="http://mm.btc123.com/btcchina.php">BTCChina Market Depth</a></li>
+  </ul>
 </div>
 </div>
 <div id="big_price"></div>
@@ -286,11 +318,11 @@
             }
             $("#undeal_count").html(data.message);
             $("#undeal_orders tbody").html(str);
-
+            $("#undeal_orders").show();
           }else if(data.code==1){
             $("#undeal_count").html(data.message);
             $('#undeal_status').html("Updated <em class='time'>0</em> seconds ago..");
-            $("#undeal_orders tbody").html('');
+            $("#undeal_orders").hide();
           }else{
             $('#undeal_status').addClass('fail').html(data.message+",updated <em class='time'>0</em> seconds ago..");
           }
@@ -459,6 +491,10 @@
       $('#update_btn').bind('click',update_config);
       $("#sell_btn").bind('click',sell_all);
       $("#undeal_orders tbody").on("click", 'a.del_order', cancel_order);
+      $("#big_price").bind('dblclick',function(){
+        $(this).toggleClass("bigger");
+        window.getSelection().empty();
+      });
 
       window.setInterval(update_time,1000)
   });
