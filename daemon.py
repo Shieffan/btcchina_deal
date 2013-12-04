@@ -9,7 +9,7 @@ import ConfigParser
 import btcchina
 
 
-cwd = os.getcwd()
+cwd = os.path.dirname(os.path.realpath(__file__))
 pid = os.path.join(cwd,"tmp/daemon.pid") 
 logger = logging.getLogger(__name__) 
 logger.setLevel(logging.DEBUG) 
