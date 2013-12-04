@@ -20,15 +20,15 @@
 
 配置文件名btc.conf，样例文件见btc.conf.sample.其中:
 
-+info,deal:配置用于查询及交易的api key. 建议为info与deal设置两组不同的key分别用于查询及交易.
-+risk:配置止损及止盈脚本的卖出条件:
-..+low_sell_ratio: 当当前价格/最后一次买入价格<=low_sell_ratio时，止损卖出
-..+high_sell_ratio: 当当前价格/最后一次买入价格>=high_sell_ratiio时，止盈卖出
-..+low_sell_price: 当当前价格<=low_sell_price时，止损卖出
-..+high_sell_price: 当当前价格>=high_sell_price时，止盈卖出
-..+fall_down_sell: 当最近两次查询的价格落差(30s内)>fall_down_sell时，卖出所有。
-..+当以上选项不存在或者设置为0时，表示不使用这个卖出条件。
-+user:当使用Flask Web访问时，设置相关的登录用户名及密码。
++ info,deal:配置用于查询及交易的api key. 建议为info与deal设置两组不同的key分别用于查询及交易.
++ risk:配置止损及止盈脚本的卖出条件:
+..+ low_sell_ratio: 当当前价格/最后一次买入价格<=low_sell_ratio时，止损卖出
+..+ high_sell_ratio: 当当前价格/最后一次买入价格>=high_sell_ratiio时，止盈卖出
+..+ low_sell_price: 当当前价格<=low_sell_price时，止损卖出
+..+ high_sell_price: 当当前价格>=high_sell_price时，止盈卖出
+..+ fall_down_sell: 当最近两次查询的价格落差(30s内)>fall_down_sell时，卖出所有。
+..+ 当以上选项不存在或者设置为0时，表示不使用这个卖出条件。
++ user:当使用Flask Web访问时，设置相关的登录用户名及密码。
 
 ####其他问题？
 
