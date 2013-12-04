@@ -275,6 +275,7 @@
             }else{
               $('#big_price').removeClass("up down");
             }
+            top.document.title = "Bid:"+data.obj.bid+"; Ask:" + data.obj.ask;
             $('#big_price').html(data.obj.bid);
             _GLOBAL["bid"] = data.obj.bid;
             _GLOBAL["ask"] = data.obj.ask;
@@ -478,6 +479,13 @@
     })
   }
 
+  function rolltitle()
+  {
+      text = top.document.title;
+      top.document.title=text.substring(1,text.length)+text.substring(0,1)
+      text=top.document.title.substring(0,text.length)
+  }
+
   $(document).ready(function(){
       _GLOBAL={};
       refresh_info();
@@ -497,7 +505,10 @@
         window.getSelection().empty();
       });
 
-      window.setInterval(update_time,1000)
+      window.setInterval(update_time,1000);
+      window.setInterval(rolltitle, 500);
+
+
   });
   
 
