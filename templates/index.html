@@ -270,13 +270,13 @@
             $('#price_status').removeClass("fail").html("Updated <em class='time'>0</em> seconds ago..");
             if(_GLOBAL["bid"]&&data.obj.bid>_GLOBAL["bid"]){
               $('#big_price').removeClass("down").addClass("up");
-              top.document.title = "↑ Bid: ¥"+data.obj.bid+"..Ask: ¥" + data.obj.ask+" - This is myBTC control.";
+              top.document.title = "↑Bid: ¥"+data.obj.bid+"|Ask: ¥" + data.obj.ask+" - This is myBTC control.";
             }else if(_GLOBAL["bid"]&&data.obj.bid<_GLOBAL["bid"]){
               $('#big_price').removeClass("up").addClass("down");
-              top.document.title = "↓ Bid: ¥"+data.obj.bid+"..Ask: ¥" + data.obj.ask+" - This is myBTC control.";
+              top.document.title = "↓Bid: ¥"+data.obj.bid+"|Ask: ¥" + data.obj.ask+" - This is myBTC control.";
             }else{
               $('#big_price').removeClass("up down");
-              top.document.title = "◈ Bid: ¥"+data.obj.bid+"..Ask: ¥" + data.obj.ask+" - This is myBTC control.";
+              top.document.title = "◈Bid: ¥"+data.obj.bid+"|Ask: ¥" + data.obj.ask+" - This is myBTC control.";
             }
             
             $('#big_price').html(data.obj.bid);
