@@ -14,7 +14,7 @@ pid = os.path.join(cwd,"tmp/daemon.pid")
 logger = logging.getLogger(__name__) 
 logger.setLevel(logging.DEBUG) 
 logger.propagate = False
-fh = logging.FileHandler(os.path.join(cwd,"tmp/daemon.log"), "a")
+fh = logging.FileHandler(os.path.join(cwd,"tmp/daemon.log"), "a+")
 fh.setLevel(logging.DEBUG)
 formatter = logging.Formatter("%(asctime)s;%(levelname)s:%(message)s","%Y-%m-%d %H:%M:%S")
 fh.setFormatter(formatter)

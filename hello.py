@@ -88,12 +88,13 @@ def index():
         config["FALLDOWN_SELL"] = 0
 
     try:
-        LOW_SELL_PRICE = float(cf.get("risk", "low_sell_price"))
+        config["LOW_SELL_PRICE"] = float(cf.get("risk", "low_sell_price"))
     except:
         config["LOW_SELL_PRICE"] = 0
+    
         
     try:
-        HIGH_SELL_PRICE = float(cf.get("risk","high_sell_price"))
+        config["HIGH_SELL_PRICE"] = float(cf.get("risk","high_sell_price"))
     except:
         config["HIGH_SELL_PRICE"] = 0
 
