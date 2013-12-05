@@ -175,6 +175,18 @@
     </tbody>
   </table>
 </div>
+<h3>Make A Deal:</h3>
+<p id="deal_status" class="status"></p>
+<div id="make_deal">
+  <select class="select-deal-type" name="deal-type">
+    <option value="buy" selected="selected">Buy</option>
+    <option value="sell">Sell</option>
+  </select>
+  <span>amount: </span><input type="text" name="deal-amount" size="10">
+  <span>price: </span><input type="text" name="deal-price" size="10">
+  <button id="submit-deal">Submit</button>
+</div>
+
 <h3>Take Action:</h3>
 <p id="sell_status" class="status"></p>
 <p>Sell all your bitcoins at current price ? <button id="sell_btn" value="Do it !">Do it !</button></p> 
@@ -285,7 +297,21 @@
             $('#big_price').html(data.obj.bid);
             _GLOBAL["bid"] = data.obj.bid;
             _GLOBAL["ask"] = data.obj.ask;
-            
+
+            if(!$("input[name='deal-price']").is(":focus")){
+               if($("select[name='deal-type']").val()=="sell"){
+                  if(!isNaN(_GLOBAL["bid"])){
+                    var bid_price = _GLOBAL["bid"]-1;
+                    $("input[name='deal-price']").val(bid_price);
+                  }
+              }else if($("select[name='deal-type']").val()=="buy"){
+                if(!isNaN(_GLOBAL["ask"])){
+                  var ask_price = _GLOBAL["ask"]+1;
+                  $("input[name='deal-price']").val(ask_price);
+                }
+              }
+            }
+                       
             ratio_li='';
             if(_GLOBAL["buy_t"]&&_GLOBAL["btc_amount"]){
               ratio_li = "<li id='li-ratio'>Current Sell Ratio: "+_GLOBAL["bid"]/_GLOBAL["buy_t"]+" </li>";
@@ -527,6 +553,20 @@
         $(this).toggleClass("bigger");
         window.getSelection().empty();
       });
+
+      $("select[name='deal-type']").change(function(){
+        if($(this).val()=="sell"){
+          if(!isNaN(_GLOBAL["bid"])){
+            var bid_price = _GLOBAL["bid"]-1;
+            $("input[name='deal-price']").val(bid_price);
+          }
+        }else if($(this).val()=="buy"){
+          if(!isNaN(_GLOBAL["ask"])){
+            var ask_price = _GLOBAL["ask"]+1;
+            $("input[name='deal-price']").val(ask_price);
+          }
+        }
+      })
 
       window.setInterval(update_time,1000);
       //window.setInterval(rolltitle, 800);
