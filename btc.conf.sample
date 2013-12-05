@@ -14,6 +14,14 @@ falldown_sell = 100
 low_sell_price = 0
 high_sell_price = 0
 
+#If you don't use email alert,ignore below.
+[email]
+login = xiaoming
+pass = xiao-ming-pass
+sender_smtp = smtp.gmail.com:587
+receiver = xiaoli@gmail.com
+
+
 #If you don't use Flask web interface,ignore below. If you do not know what this means,just ignore.
 [user]
 name=xxx

@@ -28,6 +28,11 @@
   + `high_sell_price`: 当当前价格>=high_sell_price时，止盈卖出
   + `fall_down_sell`: 当最近两次查询的价格落差(30s内)>fall_down_sell时，卖出所有。
   + 当以上选项不存在或者设置为0时，表示不使用这个卖出条件。
++ email:设置邮件提醒，需要设置一个发件SMTP服务器及收件地址。
+  + `login`: 发送邮件的SMTP登录名
+  + `pass`: 发送邮件的SMTP用户密码
+  + `sender_smtp`: 发送邮件的smtp服务器地址。如Gmail可设置为smtp.gmail.com:587
+  + `receiver`: 接收邮件提醒的邮件地址
 + user: 当使用Flask Web访问时，设置相关的登录用户名及密码。
 
 ####6.其他问题？
