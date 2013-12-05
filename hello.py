@@ -115,7 +115,7 @@ def get_info():
             f_cny_amount = result["frozen"]["cny"]["amount"] or 0
             message = "<p>%s, you currently have %g bitcoins and %g RMB, frozen %g bitcoins, %g RMB.</p>" % (title,float(btc_amount),float(cny_amount),float(f_btc_amount),float(f_cny_amount))
             code = 0
-            res={"btc_amount":btc_amount,"cny_amount":cny_amount}
+            res={"btc_amount":btc_amount,"cny_amount":cny_amount,"f_btc_amount":f_btc_amount,"f_cny_amount":f_cny_amount}
             return jsonify(message=message,code=code,obj=res)
         except Exception as e:
             message = "Something wrong happened: %s" % e
