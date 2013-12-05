@@ -552,13 +552,13 @@
             }
             window.setTimeout(function(){
               $('#deal_status').fadeOut("normal");
-            },2000);
+            },5000);
           },
           error: function(XMLHttpRequest,textStatus){
             $('#deal_status').removeClass("success").addClass("fail").html(textStatus);
             window.setTimeout(function(){
               $('#deal_status').fadeOut("normal");
-            },2000);
+            },3000);
           }
           
       });
