@@ -188,8 +188,8 @@ def get_undeal_orders():
         return "Illegal Request."
 
 
-@app.route('process_order',methods=['post'])
-def sell_all():
+@app.route('/process_order',methods=['post'])
+def process_order():
     if request.is_xhr:
         type = request.form["type"]
         price = request.form["price"]
