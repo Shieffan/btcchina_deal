@@ -524,8 +524,8 @@
 
   function process_order(){
     var deal_type=$("select[name='deal-type']").val();
-    var deal_amount = parseFloat($.trim($("deal-amount").val()));
-    var deal_price = parseFloat($.trim($("deal-price").val()));
+    var deal_amount = parseFloat($.trim($("input[name='deal-amount']").val()));
+    var deal_price = parseFloat($.trim($("input[name='deal-price']").val()));
     if(isNaN(deal_amount)||isNaN(deal_price)){
       $("#deal_status").addClass('fail').html("Please check your input !");
       return false;
