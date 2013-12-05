@@ -293,13 +293,12 @@
             total = _GLOBAL["bid"]*(_GLOBAL["btc_amount"]+_GLOBAL["f_btc_amount"])+_GLOBAL["cny_amount"]+_GLOBAL["f_cny_amount"]
             if (!isNaN(total)){
               total = total.toFixed(2);
+              if($('#total_cny').length){
+                $('#total_cny').html(" Totally "+ total + "RMB.");
+              }else{
+                $('#account_info p:first').append("<span id='total_cny'> Totally "+ total + "RMB.</span>");
+              }
             }
-            if($('#total_cny').length){
-              $('#total_cny').html(" Totally "+ total + "RMB.");
-            }else{
-              $('#account_info p:first').append("<span id='total_cny'> Totally "+ total + "RMB.</span>");
-            }
-            
             $('#price_info').html("<ul>"+data.message+ratio_li+"</ul>");
           }else{
             $('#price_status').removeClass("success").addClass("fail").html("Failed,updated <em class='time'>0</em> seconds ago..");
