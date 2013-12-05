@@ -291,6 +291,9 @@
               ratio_li = "<li id='li-ratio'>Current Sell Ratio: "+_GLOBAL["bid"]/_GLOBAL["buy_t"]+" </li>";
             }
             total = _GLOBAL["bid"]*(_GLOBAL["btc_amount"]+_GLOBAL["f_btc_amount"])+_GLOBAL["cny_amount"]+_GLOBAL["f_cny_amount"]
+            if (!isNaN(total)){
+              total = total.toFixed(2);
+            }
             if($('#total_cny').length){
               $('#total_cny').html(" Totally "+ total + "RMB.");
             }else{
