@@ -208,7 +208,7 @@ def process_order():
                 else:
                     try:
                         code = -1
-                        message = "Process deal failed, server says:" + res["message"]
+                        message = "Process deal failed, server says: " + res["message"]
                     except:
                         code = -1
                         message = "Server communicate with btcchina timeout."
@@ -220,7 +220,7 @@ def process_order():
                 else:
                     try:
                         code = -1
-                        message = "Process deal failed, server says:" + res["message"]
+                        message = "Process deal failed, server says: " + res["message"]
                     except:
                         code = -1
                         message = "Server communicate with btcchina timeout."
@@ -253,7 +253,7 @@ def sell_all():
                 else:
                     try:
                         code = -1
-                        message = "Sell order failed, server says:" + res["message"]
+                        message = "Sell order failed, server says: " + res["message"]
                     except:
                         code = -1
                         message = "Server communicate with btcchina timeout."
@@ -279,7 +279,7 @@ def cancel_order():
             else:
                 try:
                     code = -1
-                    message = "Cancel order failed, server says:" + res["message"]
+                    message = "Cancel order failed, server says: " + res["message"]
                 except:
                     code = -1
                     message = "Server communicate with btcchina timeout."
