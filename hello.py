@@ -1,11 +1,15 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 import ConfigParser
+import sys
 import datetime
 import btcchina
 from flask import Flask,render_template,request,flash,redirect,url_for,jsonify,session,g
 
-
+default_encoding = 'utf-8'
+if sys.getdefaultencoding() != default_encoding:
+    reload(sys)
+    sys.setdefaultencoding(default_encoding)
 
 cf = ConfigParser.ConfigParser()
 cf.read("btc.conf")    
@@ -197,13 +201,14 @@ def process_order():
         try:
             if type=="sell":
                 res = g.bc_deal.sell(str(price),str(cc))
+                
                 if res==True:
                     code = 0
                     message = "Sell your %g bitcoins at price %g successfully." %(cc,price)
                 else:
                     try:
                         code = -1
-                        message = "操作未完成，服务器返回：" + res["message"]
+                        message = "Process deal failed, server says:" + res["message"]
                     except:
                         code = -1
                         message = "Server communicate with btcchina timeout."
@@ -215,10 +220,10 @@ def process_order():
                 else:
                     try:
                         code = -1
-                        message = "操作未完成，服务器返回：" + res["message"]
+                        message = "Process deal failed, server says:" + res["message"]
                     except:
                         code = -1
-                        message = "Server communicate with btcchina timeout."  
+                        message = "Server communicate with btcchina timeout."
         except Exception as e:
             code = -1
             message = "Error: %s" % e
@@ -248,7 +253,7 @@ def sell_all():
                 else:
                     try:
                         code = -1
-                        message = "操作未完成，服务器返回：" + res["message"]
+                        message = "Sell order failed, server says:" + res["message"]
                     except:
                         code = -1
                         message = "Server communicate with btcchina timeout."
@@ -274,7 +279,7 @@ def cancel_order():
             else:
                 try:
                     code = -1
-                    message = "操作未完成，服务器返回：" + res["message"]
+                    message = "Cancel order failed, server says:" + res["message"]
                 except:
                     code = -1
                     message = "Server communicate with btcchina timeout."

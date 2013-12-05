@@ -10,6 +10,10 @@ import ConfigParser
 import btcchina
 from mymail import send_mail
 
+default_encoding = 'utf-8'
+if sys.getdefaultencoding() != default_encoding:
+    reload(sys)
+    sys.setdefaultencoding(default_encoding)
 
 cwd = os.path.dirname(os.path.realpath(__file__))
 pid = os.path.join(cwd,"tmp/daemon.pid") 
