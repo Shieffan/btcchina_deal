@@ -292,7 +292,7 @@
             }
             total = _GLOBAL["bid"]*(_GLOBAL["btc_amount"]+_GLOBAL["f_btc_amount"])+_GLOBAL["cny_amount"]+_GLOBAL["f_cny_amount"]
             if($('#total_cny').length){
-              $('#total_cny').html("Totally "+ total + "RMB.");
+              $('#total_cny').html(" Totally "+ total + "RMB.");
             }else{
               $('#account_info p:first').append("<span id='total_cny'>Totally "+ total + "RMB.</span>");
             }
