@@ -188,6 +188,46 @@ def get_undeal_orders():
         return "Illegal Request."
 
 
+@app.route('process_order',methods=['post'])
+def sell_all():
+    if request.is_xhr:
+        type = request.form["type"]
+        price = request.form["price"]
+        cc = request.form["amount"]
+        try:
+            if type=="sell":
+                res = g.bc_deal.sell(str(price),str(cc))
+                if res==True:
+                    code = 0
+                    message = "Sell your %g bitcoins at price %g successfully." %(cc,price)
+                else:
+                    try:
+                        code = -1
+                        message = "操作未完成，服务器返回：" + res["message"]
+                    except:
+                        code = -1
+                        message = "Server communicate with btcchina timeout."
+            elif type=="buy":
+                res = g.bc_deal.buy(str(price),str(cc))
+                if res==True:
+                    code = 0
+                    message = "Buy %g bitcoins at price %g successfully." %(cc,price)
+                else:
+                    try:
+                        code = -1
+                        message = "操作未完成，服务器返回：" + res["message"]
+                    except:
+                        code = -1
+                        message = "Server communicate with btcchina timeout."  
+        except Exception as e:
+            code = -1
+            message = "Error: %s" % e
+
+        return jsonify(message=message,code=code)
+    else:
+        return "Illegal Request."
+
+
 
 @app.route('/sell_all',methods=['post'])
 def sell_all():
