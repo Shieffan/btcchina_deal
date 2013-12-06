@@ -140,6 +140,7 @@ def get_price():
             ask_price = result["ticker"]['sell']
             high = result['ticker']['high']
             low = result['ticker']['low']
+            vol = result['ticker']['vol']
             message = """\
                         <li>Bid Price: %s</li>
                         <li>Ask Price: %s</li>
