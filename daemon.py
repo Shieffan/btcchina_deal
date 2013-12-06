@@ -4,6 +4,7 @@
 import os
 import sys
 import logging 
+import requests
 from time import sleep
 from daemonize import Daemonize
 import ConfigParser
@@ -47,6 +48,23 @@ def mail(subject="",message=""):
         send_mail(from_addr=sender_addr, to_addr_list=[receiver],subject=subject, message=message,login=sender_login, password=sender_pass,smtpserver=sender_smtp)
     else:
         return None
+
+def get_must_sell_price():
+    r = requests.get('https://data.btcchina.com/data/orderbook') 
+    result = r.json()
+    bids = result['bids']
+    count = 0.0
+    money = 0.0
+    for i in bids:
+      count+=i[1]
+      money+=i[1]*i[0]
+      price = money/count
+      if count>=15:
+          break
+
+    return price
+
+
 
 def main():
     try:
@@ -125,8 +143,9 @@ def main():
                 last_price = abs(float(t["cny_amount"])/float(t["btc_amount"]))
                 
                 #CHECK IF CURRENT PRICE IS TOO LOWER THAN LAST TRANSACTION PRICE
-                result = bc.get_market_depth()
-                cur_price = float(result["market_depth"]['bid'][0]["price"])
+                r = requests.get('https://data.btcchina.com/data/ticker') 
+                result = r.json()
+                cur_price = float(result['ticker']['buy'])
                 if t_date==int(t["date"]):
                     if cur_price > max_price:
                         is_max = True
@@ -148,19 +167,20 @@ def main():
                     LOW_SELL_RATIO = 1.0
                 ratio = cur_price/last_price
 
-                if is_max==True:
+                if is_max==True and prev_price!=0:
                     logger.info("\n\r\033[1m\033[36m##The price reached the highest price %g since your last buy transaction.\x1b[0m" % (max_price))
                 
-                if is_min==True:
+                if is_min==True and prev_price!=0:
                     logger.info("\n\r\033[1m\033[31m##The price fell down to the lowest price %g since your last buy transaction.\x1b[0m" % (min_price))
                 
                 if LOW_SELL_PRICE and cur_price<LOW_SELL_PRICE:
                         reason = "\n\r\033[1;31m$$_Ratio: %g; Current bid price %g; LOW_SELL_PRICE: %g;\n\rFuck, selling all %g bitcoins.\x1b[0m" % (ratio,cur_price,LOW_SELL_PRICE,amount)
                         logger.info(reason)
-                        res = bc_deal.sell(str(cur_price-0.1),str(amount-0.00001))
+                        sell_price = get_must_sell_price()
+                        res = bc_deal.sell(str(sell_price-0.1),str(amount-0.00001))
                         if res==True:
-                            mail("Sorry to sell all your bitcoins.",reason)
-                            logger.info("$~_Commit order successfully！\n")
+                            mail("Sorry to sell all your bitcoins",reason+"\n\rSell with price "+str(sell_price) + " successfully！")
+                            logger.info("$~_Commit order at price %g successfully！\n" % sell_price)
                             prev_price = 0
                             continue
                         else:
@@ -188,10 +208,11 @@ def main():
                     #SELL ALL
                     reason = "\n\r\033[1;31m$$_Ratio: %g; Current bid price %g; Your last buybtc price %g; LOW_SELL_RATIO: %g;\n\rFuck, selling all %g bitcoins.\x1b[0m" % (ratio,cur_price,last_price,LOW_SELL_RATIO,amount)
                     logger.info(reason)
-                    res = bc_deal.sell(str(cur_price-0.1),str(amount-0.00001))
+                    sell_price = get_must_sell_price()
+                    res = bc_deal.sell(str(sell_price-0.1),str(amount-0.00001))
                     if res==True:
-                        mail("Sorry to sell all your bitcoins.",reason)
-                        logger.info("$~_Commit order successfully！\n")
+                        mail("Sorry to sell all your bitcoins",reason+"\n\rSell with price "+str(sell_price) + " successfully！")
+                        logger.info("$~_Commit order at price %g successfully！\n" % sell_price)
                         prev_price = 0
                         continue
                     else:
@@ -221,10 +242,11 @@ def main():
                     reason = "\n\r\033[1m\x1b[32m!!Sorry to sell all your %g bitcoins because its price has fallen down %g RMB in the past 30 seconds.\x1b[0m" % (amount,prev_price - cur_price)
                     logger.info(reason)
                     try:
-                        res = bc_deal.sell(str(cur_price-0.1),str(amount-0.00001))
+                        sell_price = get_must_sell_price()
+                        res = bc_deal.sell(str(sell_price-0.1),str(amount-0.00001))
                         if res==True:
-                            mail("I am selling all your bitcoins.",reason)
-                            logger.info("$~_Commit order successfully！\n")
+                            mail("I am selling all your bitcoins",reason+"\n\rSell with price "+str(sell_price) + " successfully！")
+                            logger.info("$~_Commit order at price %g successfully！\n" % sell_price)
                             prev_price = 0
                     except Exception as e:
                         logger.error("\n!!!Selling error: %s ...\n" % e)
