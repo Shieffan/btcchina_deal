@@ -329,7 +329,7 @@
             total = _GLOBAL["bid"]*(_GLOBAL["btc_amount"]+_GLOBAL["f_btc_amount"])+_GLOBAL["cny_amount"]+_GLOBAL["f_cny_amount"]
             if (!isNaN(total)){
               total = total.toFixed(2);
-              $('#total').html(" Totally <strong>"+ total + "</strong>RMB.");
+              $('#total').html(" Totally <strong>¥"+ total + "</strong>RMB.");
             }
             $('#price_info').html("<ul>"+data.message+ratio_li+"</ul>");
           }else{
