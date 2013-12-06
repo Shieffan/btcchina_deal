@@ -170,7 +170,7 @@ def get_transactions():
             t_sell = t_sell["transaction"][0]
             t_sell_time = datetime.datetime.fromtimestamp(t_sell["date"]).strftime('%Y-%m-%d %H:%M:%S')
 
-            message = "<ul><li>BuyBtc: At %s, %g bitcoins, price <strong>%g</strong>, totally ¥%g RMB</li><li>SellBtc: At %s, %g bitcoins, price <strong>%g</strong>, totally ¥%g RMB</li></ul>" % (t_buy_time,abs(float(t_buy["btc_amount"])),abs(float(t_buy["cny_amount"])/float(t_buy["btc_amount"])),abs(float(t_buy["cny_amount"])),t_sell_time,abs(float(t_sell["btc_amount"])),abs(float(t_sell["cny_amount"])/float(t_sell["btc_amount"])),abs(float(t_sell["cny_amount"])))
+            message = "<ul><li>BuyBtc: At %s, %g bitcoins, price <strong>¥%g</strong>, totally ¥%g RMB</li><li>SellBtc: At %s, %g bitcoins, price <strong>¥%g</strong>, totally ¥%g RMB</li></ul>" % (t_buy_time,abs(float(t_buy["btc_amount"])),abs(float(t_buy["cny_amount"])/float(t_buy["btc_amount"])),abs(float(t_buy["cny_amount"])),t_sell_time,abs(float(t_sell["btc_amount"])),abs(float(t_sell["cny_amount"])/float(t_sell["btc_amount"])),abs(float(t_sell["cny_amount"])))
             code = 0
             res = {"buy_t":abs(float(t_buy["cny_amount"])/float(t_buy["btc_amount"])),"sell_t":abs(float(t_sell["cny_amount"])/float(t_sell["btc_amount"]))}
             return jsonify(message=message,code=code,obj=res)
