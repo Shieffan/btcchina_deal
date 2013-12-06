@@ -56,12 +56,11 @@ def get_must_sell_price():
     count = 0.0
     money = 0.0
     for i in bids:
-      count+=i[1]
-      money+=i[1]*i[0]
-      price = money/count
-      if count>=15:
-          break
-
+        count+=i[1]
+        money+=i[1]*i[0]
+        price = money/count
+        if count>=15:
+            break
     return price
 
 

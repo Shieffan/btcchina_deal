@@ -261,11 +261,11 @@ def sell_all():
                     count = 0.0
                     money = 0.0
                     for i in bids:
-                      count+=i[1]
-                      money+=i[1]*i[0]
-                      price = money/count
-                      if count>=10:
-                          break
+                        count+=i[1]
+                        money+=i[1]*i[0]
+                        price = money/count
+                        if count>=10:
+                            break
                 else:
                     r = requests.get('https://data.btcchina.com/data/ticker') 
                     result = r.json()

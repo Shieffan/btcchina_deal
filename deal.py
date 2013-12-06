@@ -4,6 +4,7 @@
 import os
 import sys
 import time
+import requests
 import ConfigParser
 import btcchina
 from colorama import init,Fore,Style
@@ -29,15 +30,32 @@ deal_access_key = cf.get("deal", "access_key")
 deal_secret_key = cf.get("deal", "secret_key")
 
 
-def get_current_price(bc,type="bid"):
-    result = bc.get_market_depth()
-    price = result["market_depth"][type][0]["price"]
-    return price
+def get_current_price(type="bid"):
+    r = requests.get('https://data.btcchina.com/data/orderbook') 
+    result = r.json()
+    if type=="bid" or type=='ask':
+        type+='s'
+        orders = result[type]
+        if type=="asks":
+            orders=orders[::-1]
+        count = 0.0
+        money = 0.0
+        for i in orders:
+            count+=i[1]
+            money+=i[1]*i[0]
+            price = money/count
+            if count>=10:
+                break
+        return price
+    elif type=='all':
+        bid = get_current_price('bid')
+        ask = get_current_price('ask')
+        return [bid,ask]
 
 def process_order(bc,amount=1.0,price="current",type="sell",confirmed="n"):
     if type=="sell":
         if price=="current":
-            price = float(get_current_price(bc,"bid"))-0.1
+            price = float(get_current_price("bid"))
         if confirmed=="y":
             final = "y"
         else:
@@ -56,7 +74,7 @@ def process_order(bc,amount=1.0,price="current",type="sell",confirmed="n"):
             print "交易已取消,正在返回主菜单..."
     elif type=="buy":
         if price=="current":
-            price= float(get_current_price(bc,"ask"))+0.1
+            price= float(get_current_price("ask"))
         final = raw_input(Fore.YELLOW+"\r你将以"+str(price)+"的价格买入"+str(amount)+"的比特币，共计"+str(price*amount)+"元确认请输入Y: ")
         if final.lower()=='y':
             res = bc.buy(str(price),str(amount))
@@ -116,8 +134,7 @@ if __name__ == '__main__':
             cny_amount = result["balance"]["cny"]["amount"] or 0
             f_btc_amount = result["frozen"]["btc"]["amount"] or 0
             f_cny_amount = result["frozen"]["cny"]["amount"] or 0
-            bid_price = get_current_price(bc,type="bid")
-            ask_price = get_current_price(bc,type="ask")
+            bid_price,ask_price = get_current_price(type="both")
             os.system('clear')
             print '''%s%s,您目前可用%g个比特币以及%g元人民币,冻结%g比特币,%g元人民币.
                                 \r当前Bid Price %g,当前Ask Price %g.请输入您要执行的交易类型:
