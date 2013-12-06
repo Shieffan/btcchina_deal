@@ -161,6 +161,7 @@
     <li>Today Highest: ...</li>
     <li>Today Lowest: ...</li>
     <li>Today Vol: ...</li>
+    <li>Current Sell Ratio: ...</li>
   </ul>
 </div>
 <h3>Last Transaction:<span id="transaction_status" class="status"></span></h3>
@@ -317,6 +318,8 @@
             ratio_li='';
             if(_GLOBAL["buy_t"]&&_GLOBAL["btc_amount"]){
               ratio_li = "<li id='li-ratio'>Current Sell Ratio: "+_GLOBAL["bid"]/_GLOBAL["buy_t"]+" </li>";
+            }else{
+              ratio_li = "<li id='li-ratio'>Current Sell Ratio: You own no bitcoins now. </li>";
             }
             total = _GLOBAL["bid"]*(_GLOBAL["btc_amount"]+_GLOBAL["f_btc_amount"])+_GLOBAL["cny_amount"]+_GLOBAL["f_cny_amount"]
             if (!isNaN(total)){
