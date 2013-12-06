@@ -204,7 +204,7 @@ def process_order():
                 
                 if res==True:
                     code = 0
-                    message = "Sell your %g bitcoins at price %g successfully." %(cc,price)
+                    message = "Sell your %s bitcoins at price %s successfully." %(cc,price)
                 else:
                     try:
                         code = -1
@@ -216,7 +216,7 @@ def process_order():
                 res = g.bc_deal.buy(str(price),str(cc))
                 if res==True:
                     code = 0
-                    message = "Buy %g bitcoins at price %g successfully." %(cc,price)
+                    message = "Buy %s bitcoins at price %s successfully." %(cc,price)
                 else:
                     try:
                         code = -1
