@@ -152,7 +152,7 @@
   {% endif %}
 {% endwith %}
 <h3>Account Info:<span id="account_status" class="status"></span></h3>
-<div id="account_info"><p>I'm fucking loading...</p></div>
+<div id="account_info"><p>I'm fucking loading...</p><span class="total"></span></div>
 <h3>Current Price:<span id="price_status" class="status"></span></h3>
 <div id="price_info">
   <ul>
@@ -318,11 +318,7 @@
             total = _GLOBAL["bid"]*(_GLOBAL["btc_amount"]+_GLOBAL["f_btc_amount"])+_GLOBAL["cny_amount"]+_GLOBAL["f_cny_amount"]
             if (!isNaN(total)){
               total = total.toFixed(2);
-              if($('#total_cny').length){
-                $('#total_cny').html(" Totally "+ total + "RMB.");
-              }else{
-                $('#account_info p:first').append("<span id='total_cny'> Totally "+ total + "RMB.</span>");
-              }
+              $('#total').html(" Totally "+ total + "RMB.");
             }
             $('#price_info').html("<ul>"+data.message+ratio_li+"</ul>");
           }else{
