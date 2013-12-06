@@ -319,7 +319,12 @@
             if(_GLOBAL["buy_t"]&&_GLOBAL["btc_amount"]){
               ratio_li = "<li id='li-ratio'>Current Sell Ratio: "+_GLOBAL["bid"]/_GLOBAL["buy_t"]+" </li>";
             }else{
-              ratio_li = "<li id='li-ratio'>Current Sell Ratio: You own no bitcoins now. </li>";
+              if(_GLOBAL["btc_amount"]==0){
+                ratio_li = "<li id='li-ratio'>Current Sell Ratio: You own no bitcoins now. </li>";
+              }else{
+                ratio_li = "<li id='li-ratio'>Current Sell Ratio: Loading your infos now. </li>";
+              }
+              
             }
             total = _GLOBAL["bid"]*(_GLOBAL["btc_amount"]+_GLOBAL["f_btc_amount"])+_GLOBAL["cny_amount"]+_GLOBAL["f_cny_amount"]
             if (!isNaN(total)){
