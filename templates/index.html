@@ -261,7 +261,7 @@
           }else{
             $('#account_status').removeClass("success").addClass("fail").html("Failed,updated <em class='time'>0</em> seconds ago..");
           }
-          $('#account_info').html(data.message);
+          $('#account_info p').html(data.message);
         },
         error: function(XMLHttpRequest,textStatus){
           $('#account_status').addClass('fail').html(textStatus+",updated <em class='time'>0</em> seconds ago..");
