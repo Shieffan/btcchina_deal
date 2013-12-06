@@ -138,7 +138,14 @@ def get_price():
             result = r.json()
             bid_price = result['ticker']['buy']
             ask_price = result["ticker"]['sell']
-            message = "<li>Bid Price: %s</li><li>Ask Price: %s</li>" % (bid_price,ask_price)
+            high = result['ticker']['high']
+            low = result['ticker']['low']
+            message = """\
+                        <li>Bid Price: %s</li>
+                        <li>Ask Price: %s</li>
+                        <li>Today High: %s</li>
+                        <li>Today Low: %s</li>
+                        <li>Today Vol: %s</li>""" % (bid_price,ask_price,high,low,vol)
             res={"bid":float(bid_price),"ask":float(ask_price)}
             code = 0
             return jsonify(message=message,code=code,obj=res)
