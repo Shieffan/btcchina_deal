@@ -4,6 +4,7 @@ import ConfigParser
 import sys
 import datetime
 import btcchina
+import requests
 from flask import Flask,render_template,request,flash,redirect,url_for,jsonify,session,g
 
 default_encoding = 'utf-8'
@@ -133,11 +134,12 @@ def get_info():
 def get_price():
     if request.is_xhr:
         try:
-            result = g.bc.get_market_depth()
-            bid_price = result["market_depth"]['bid'][0]["price"]
-            ask_price = result["market_depth"]['ask'][0]["price"]    
-            message = "<li>Bid Price: %g</li><li>Ask Price: %g</li>" % (bid_price,ask_price)
-            res={"bid":bid_price,"ask":ask_price}
+            r = requests.get('https://data.btcchina.com/data/ticker') 
+            result = r.json()
+            bid_price = result['ticker']['buy']
+            ask_price = result["ticker"]['sell']
+            message = "<li>Bid Price: %s</li><li>Ask Price: %s</li>" % (bid_price,ask_price)
+            res={"bid":float(bid_price),"ask":float(ask_price)}
             code = 0
             return jsonify(message=message,code=code,obj=res)
         except Exception as e:
@@ -244,8 +246,10 @@ def sell_all():
                 code = -1
                 message = "You have no bitcoins now."
             else:
-                result = g.bc.get_market_depth()
-                price = float(result["market_depth"]['bid'][0]["price"])-0.1
+                r = requests.get('https://data.btcchina.com/data/ticker') 
+                result = r.json()
+                bid_price = result['ticker']['buy']
+                price = float(bid_price)-1
                 res = g.bc_deal.sell(str(price),str(cc-0.00001))
                 if res==True:
                     code = 0
