@@ -50,7 +50,7 @@ def mail(subject="",message=""):
         return None
 
 def get_must_sell_price():
-    r = requests.get('https://data.btcchina.com/data/orderbook') 
+    r = requests.get('https://data.btcchina.com/data/orderbook',timeout=30) 
     result = r.json()
     bids = result['bids']
     count = 0.0

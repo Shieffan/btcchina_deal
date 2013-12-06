@@ -31,7 +31,7 @@ deal_secret_key = cf.get("deal", "secret_key")
 
 
 def get_current_price(type="bid"):
-    r = requests.get('https://data.btcchina.com/data/orderbook') 
+    r = requests.get('https://data.btcchina.com/data/orderbook',timeout=5) 
     result = r.json()
     if type=="bid" or type=='ask':
         type+='s'
@@ -47,10 +47,12 @@ def get_current_price(type="bid"):
             if count>=10:
                 break
         return price
-    elif type=='all':
+    elif type=='both':
         bid = get_current_price('bid')
         ask = get_current_price('ask')
         return [bid,ask]
+    else:
+        return None
 
 def process_order(bc,amount=1.0,price="current",type="sell",confirmed="n"):
     if type=="sell":
@@ -134,7 +136,7 @@ if __name__ == '__main__':
             cny_amount = result["balance"]["cny"]["amount"] or 0
             f_btc_amount = result["frozen"]["btc"]["amount"] or 0
             f_cny_amount = result["frozen"]["cny"]["amount"] or 0
-            bid_price,ask_price = get_current_price(type="both")
+            bid_price,ask_price = get_current_price("both")
             os.system('clear')
             print '''%s%s,您目前可用%g个比特币以及%g元人民币,冻结%g比特币,%g元人民币.
                                 \r当前Bid Price %g,当前Ask Price %g.请输入您要执行的交易类型:
