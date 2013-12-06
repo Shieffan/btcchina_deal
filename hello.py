@@ -144,8 +144,8 @@ def get_price():
             message = """\
                         <li>Bid Price: %s</li>
                         <li>Ask Price: %s</li>
-                        <li>Today High: %s</li>
-                        <li>Today Low: %s</li>
+                        <li>Today Highest: %s</li>
+                        <li>Today Lowest: %s</li>
                         <li>Today Vol: %s</li>""" % (bid_price,ask_price,high,low,vol)
             res={"bid":float(bid_price),"ask":float(ask_price)}
             code = 0
