@@ -192,7 +192,7 @@
 
 <h3>Take Action:</h3>
 <p id="sell_status" class="status"></p>
-<p>Sell all your bitcoins at current price ? <button id="sell_btn" value="Do it !">Do it !</button></p> 
+<p>Sell all your bitcoins at current price ? <input id="just_sell" type="button" value="Just Sell" /><input id="must_sell" type="button" value="Must Sell" /></p> 
 {% if config %}
 <h3>Config List:</h3>
 <ul class="list">
@@ -462,10 +462,18 @@
 
   function sell_all(){
     if(confirm("Are you sure ?")){
+      if($(this).val()=="Must Sell"){
+        must = "true"
+      }else if($(this).val()=="Just Sell"){
+        must = "false"
+      }
       $.ajax({
           type: "post",
           timeout: 30000,
           cache: false,
+          data:{
+            must:must
+          },
           dataType: "json",
           url: "{{ url_for('sell_all') }}",
           beforeSend: function(XMLHttpRequest){
@@ -599,7 +607,7 @@
 
       $('#update_btn').bind('click',update_config);
       $("#submit-deal").bind('click',process_order);
-      $("#sell_btn").bind('click',sell_all);
+      $("#just_sell,#must_sell").bind('click',sell_all);
       $("#undeal_orders tbody").on("click", 'a.del_order', cancel_order);
       $("#big_price").bind('dblclick',function(){
         $(this).toggleClass("bigger");

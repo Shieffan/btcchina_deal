@@ -140,7 +140,7 @@ def get_price():
             ask_price = result["ticker"]['sell']
             high = result['ticker']['high']
             low = result['ticker']['low']
-            vol = result['ticker']['vol']
+            vol = str(float(result['ticker']['vol']))
             message = """\
                         <li>Bid Price: %s</li>
                         <li>Ask Price: %s</li>
@@ -254,10 +254,24 @@ def sell_all():
                 code = -1
                 message = "You have no bitcoins now."
             else:
-                r = requests.get('https://data.btcchina.com/data/ticker') 
-                result = r.json()
-                bid_price = result['ticker']['buy']
-                price = float(bid_price)-1
+                if request.form["must"]=="true":
+                    r = requests.get('https://data.btcchina.com/data/orderbook') 
+                    result = r.json()
+                    bids = result['bids']
+                    count = 0.0
+                    money = 0.0
+                    for i in bids:
+                      count+=i[1]
+                      money+=i[1]*i[0]
+                      price = money/count
+                      if count>=10:
+                          break
+                else:
+                    r = requests.get('https://data.btcchina.com/data/ticker') 
+                    result = r.json()
+                    bid_price = result['ticker']['buy']
+                    price = float(bid_price)-1
+
                 res = g.bc_deal.sell(str(price),str(cc-0.00001))
                 if res==True:
                     code = 0
@@ -341,5 +355,5 @@ def updateConfig():
     else:
         return "Illegal Request."
 
-#if __name__ == '__main__':
-#    app.run(debug=True)
+if __name__ == '__main__':
+    app.run(debug=True)
