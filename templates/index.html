@@ -367,7 +367,7 @@
               date = date.getFullYear().toString()+'-'+date.getMonth()+'-'+date.getDate()+" " + date.getHours()+":"+date.getMinutes();
               str += "<tr><td>"+order.type+"</td><td>"+parseFloat(order.price)+"</td><td>"+parseFloat(order.amount)+"</td><td>"+parseFloat(order.amount_original)+"</td><td>"+date+"</td><td><a href='javascript:void(0)' data-id='"+order.id+"' class='del_order'>Cancel</a></td></tr>";
             }
-            $("#undeal_count").html(data.message);
+            //$("#undeal_count").html(data.message);
             $("#undeal_orders tbody").html(str);
             $("#undeal_orders").show();
           }else if(data.code==1){
@@ -484,7 +484,9 @@
           success: function(data, textStatus){
             if(data.code==0){
               $('#sell_status').removeClass("fail").addClass("success").html(data.message);
-              refresh_undeal_orders();
+              window.setTimeout(function(){
+                refresh_undeal_orders();
+              },3000);
             }else{
               $('#sell_status').removeClass("success").addClass("fail").html(data.message);
             }
@@ -524,6 +526,7 @@
             if($("#undeal_orders tr").length<=1){
               $("#undeal_orders tr").remove();
             }
+
           }else{
              $(that).html('Cancel');
              $('#undeal_status').addClass('fail').html(data.message);
@@ -563,10 +566,13 @@
           success: function(data, textStatus){
             if(data.code==0){
               $('#deal_status').removeClass("fail").addClass("success").html(data.message);
-              refresh_undeal_orders();
+              window.setTimeout(function(){
+                refresh_undeal_orders();
+              },3000);
             }else{
               $('#deal_status').removeClass("success").addClass("fail").html(data.message);
             }
+           
             window.setTimeout(function(){
               $('#deal_status').fadeOut("normal");
             },5000);
