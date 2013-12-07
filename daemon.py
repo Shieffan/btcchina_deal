@@ -89,11 +89,26 @@ def main():
     is_max = is_min = False
     prev_price = 0
     while True:
-        logger.info("Refresh info..")
+        logger.info("Read config..")
         try:
             cf.read(os.path.join(cwd,"btc.conf"))  
         except:
             logger.error("Please check if btc.conf exists.")
+
+        try:
+            USE_DAEMON = cf.get("global","use")
+        except:
+            USE_DAEMON = False
+
+        if USE_DAEMON!="true":
+            max_price = 0
+            min_price = 0
+            t_date = 0
+            is_max = is_min = False
+            prev_price = 0
+            logger.info("DO_NOT_USE_DAEMON..Sleep 30 seconds.")
+            sleep(30)
+            continue
 
         try:
             LOW_SELL_RATIO = float(cf.get("risk", "low_sell_ratio"))
@@ -128,6 +143,7 @@ def main():
         
 
         logger.info("\x1b[1mLOW_SELL_PRICE = %s; HIGH_SELL_PRICE = %s;\x1b[0m" %(LOW_SELL_PRICE,HIGH_SELL_PRICE))
+        logger.info("Refresh info..")
         try:
             result = bc.get_account_info()
             if float(result["balance"]["btc"]["amount"]) < 0.001:
@@ -178,6 +194,7 @@ def main():
                         sell_price = get_must_sell_price()
                         res = bc_deal.sell(str(sell_price-0.1),str(amount-0.00001))
                         if res==True:
+                            reason = "$$_Ratio: %g; Current bid price %g; LOW_SELL_PRICE: %g;\n\rFuck, selling all %g bitcoins." % (ratio,cur_price,LOW_SELL_PRICE,amount)
                             mail("Sorry to sell all your bitcoins",reason+"\n\rSell with price "+str(sell_price) + " successfully！")
                             logger.info("$~_Commit order at price %g successfully！\n" % sell_price)
                             prev_price = 0
@@ -193,6 +210,7 @@ def main():
                         logger.info(reason)
                         res = bc_deal.sell(str(cur_price-0.1),str(amount-0.00001))
                         if res==True:
+                            reason = "$$_Ratio: %g; Current bid price %g; HIGH_SELL_PRICE: %g;\n\rNice, selling all %g bitcoins." % (ratio,cur_price,HIGH_SELL_PRICE,amount)
                             mail("Happly to sell all your bitcoins.",reason)
                             logger.info("$~_Commit order successfully！\n")
                             prev_price = 0
@@ -210,6 +228,7 @@ def main():
                     sell_price = get_must_sell_price()
                     res = bc_deal.sell(str(sell_price-0.1),str(amount-0.00001))
                     if res==True:
+                        reason = "$$_Ratio: %g; Current bid price %g; Your last buybtc price %g; LOW_SELL_RATIO: %g;\n\rFuck, selling all %g bitcoins." % (ratio,cur_price,last_price,LOW_SELL_RATIO,amount)
                         mail("Sorry to sell all your bitcoins",reason+"\n\rSell with price "+str(sell_price) + " successfully！")
                         logger.info("$~_Commit order at price %g successfully！\n" % sell_price)
                         prev_price = 0
@@ -226,6 +245,7 @@ def main():
                     logger.info(reason)
                     res = bc_deal.sell(str(cur_price-0.1),str(amount-0.00001))
                     if res==True:
+                        reason=  "$$_Ratio: %g; Current bid price %g; Your last buybtc price %g; HIGH_SELL_RATIO: %g;\n\rNice, selling all %g bitcoins." % (ratio,cur_price,last_price,HIGH_SELL_RATIO,amount)
                         mail("Happly to sell all your bitcoins.",reason)
                         logger.info("$~_Commit order successfully！\n")
                         prev_price = 0
@@ -244,6 +264,7 @@ def main():
                         sell_price = get_must_sell_price()
                         res = bc_deal.sell(str(sell_price-0.1),str(amount-0.00001))
                         if res==True:
+                            reason = "Sorry to sell all your %g bitcoins because its price has fallen down %g RMB in the past 30 seconds." % (amount,prev_price - cur_price)
                             mail("I am selling all your bitcoins",reason+"\n\rSell with price "+str(sell_price) + " successfully！")
                             logger.info("$~_Commit order at price %g successfully！\n" % sell_price)
                             prev_price = 0
