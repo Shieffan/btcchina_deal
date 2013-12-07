@@ -75,6 +75,16 @@ def index():
         return "Read config file error.Please make sure that btc.conf file exists and synatax right."
 
     config = {}
+
+    try:
+        config["USE_DAEMON"] = cf.get("global","use")
+        if config["USE_DAEMON"]=="true":
+            config["USE_DAEMON"] = "enabled"
+        else:
+            config["USE_DAEMON"] = "disabled"
+    except:
+        config["USE_DAEMON"] = "disabled"
+
     
     try:
         LOW_SELL_RATIO = float(cf.get("risk", "low_sell_ratio"))
@@ -318,6 +328,36 @@ def cancel_order():
     else:
         return "Illegal Request."
 
+
+@app.route('/toggle_daemon',methods=["POST"])
+def toggle_daemon():
+    if request.is_xhr:
+        try:
+            cf = ConfigParser.ConfigParser()
+            cf.read("btc.conf")
+            try:
+                use = cf.get("global","use")
+            except:
+                use = "false"
+
+            if use=="true":
+                new_use = "false"
+            else:
+                new_use = "true"
+
+            cf.set("global", "use",new_use)
+            cf.write(open('btc.conf','w'))
+            
+            code = 0
+            message = "Update config successfully!"
+        except Exception as e:
+            code = -1
+            message = "Updating config file failed: %s<br/>Please reload this page." % e
+
+        return jsonify(code=code,message=message)
+
+    else:
+        return "Illegal Request."
 
 
 @app.route('/update',methods=['POST'])
