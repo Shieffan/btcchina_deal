@@ -1,3 +1,6 @@
+[global]
+use=true
+
 [info]
 access_key=xx-xx-xx-xx
 secret_key=xx-xx-xx-xx
