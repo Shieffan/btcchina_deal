@@ -49,19 +49,32 @@ def mail(subject="",message=""):
     else:
         return None
 
-def get_must_sell_price():
-    r = requests.get('https://data.btcchina.com/data/orderbook',timeout=30) 
-    result = r.json()
-    bids = result['bids']
-    count = 0.0
-    money = 0.0
-    for i in bids:
-        count+=i[1]
-        money+=i[1]*i[0]
-        price = money/count
-        if count>=15:
-            break
-    return price
+def get_must_sell_price(bc):
+    try:
+        r = requests.get('https://data.btcchina.com/data/orderbook',timeout=30) 
+        result = r.json()
+        bids = result['bids']
+        count = 0.0
+        money = 0.0
+        for i in bids:
+            count+=i[1]
+            money+=i[1]*i[0]
+            price = money/count
+            if count>=15:
+                break
+        return price
+    except requests.exceptions.Timeout:
+        result = bc.get_market_depth(10)
+        bid_money_total=0.0
+        bid_amount_total=0.0
+        for b in result["market_depth"]["bid"]:
+            bid_amount_total+=b["amount"]
+            bid_money_total+=b["price"]*b["amount"]
+            if bid_amount_total>15:
+                break
+        price  = bid_money_total/bid_amount_total
+        return price
+
 
 
 
@@ -191,7 +204,7 @@ def main():
                 if LOW_SELL_PRICE and cur_price<LOW_SELL_PRICE:
                         reason = "\n\r\033[1;31m$$_Ratio: %g; Current bid price %g; LOW_SELL_PRICE: %g;\n\rFuck, selling all %g bitcoins.\x1b[0m" % (ratio,cur_price,LOW_SELL_PRICE,amount)
                         logger.info(reason)
-                        sell_price = get_must_sell_price()
+                        sell_price = get_must_sell_price(bc)
                         res = bc_deal.sell(str(sell_price-0.1),str(amount-0.00001))
                         if res==True:
                             reason = "$$_Ratio: %g; Current bid price %g; LOW_SELL_PRICE: %g;\n\rFuck, selling all %g bitcoins." % (ratio,cur_price,LOW_SELL_PRICE,amount)
@@ -225,7 +238,7 @@ def main():
                     #SELL ALL
                     reason = "\n\r\033[1;31m$$_Ratio: %g; Current bid price %g; Your last buybtc price %g; LOW_SELL_RATIO: %g;\n\rFuck, selling all %g bitcoins.\x1b[0m" % (ratio,cur_price,last_price,LOW_SELL_RATIO,amount)
                     logger.info(reason)
-                    sell_price = get_must_sell_price()
+                    sell_price = get_must_sell_price(bc)
                     res = bc_deal.sell(str(sell_price-0.1),str(amount-0.00001))
                     if res==True:
                         reason = "$$_Ratio: %g; Current bid price %g; Your last buybtc price %g; LOW_SELL_RATIO: %g;\n\rFuck, selling all %g bitcoins." % (ratio,cur_price,last_price,LOW_SELL_RATIO,amount)
@@ -261,7 +274,7 @@ def main():
                     reason = "\n\r\033[1m\x1b[32m!!Sorry to sell all your %g bitcoins because its price has fallen down %g RMB in the past 30 seconds.\x1b[0m" % (amount,prev_price - cur_price)
                     logger.info(reason)
                     try:
-                        sell_price = get_must_sell_price()
+                        sell_price = get_must_sell_price(bc)
                         res = bc_deal.sell(str(sell_price-0.1),str(amount-0.00001))
                         if res==True:
                             reason = "Sorry to sell all your %g bitcoins because its price has fallen down %g RMB in the past 30 seconds." % (amount,prev_price - cur_price)

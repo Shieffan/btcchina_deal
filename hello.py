@@ -266,6 +266,33 @@ def process_order():
         return "Illegal Request."
 
 
+def get_must_sell_price(bc):
+    try:
+        r = requests.get('https://data.btcchina.com/data/orderbook',timeout=30) 
+        result = r.json()
+        bids = result['bids']
+        count = 0.0
+        money = 0.0
+        for i in bids:
+            count+=i[1]
+            money+=i[1]*i[0]
+            price = money/count
+            if count>=15:
+                break
+        return price
+    except requests.exceptions.Timeout:
+        result = bc.get_market_depth(10)
+        bid_money_total=0.0
+        bid_amount_total=0.0
+        for b in result["market_depth"]["bid"]:
+            bid_amount_total+=b["amount"]
+            bid_money_total+=b["price"]*b["amount"]
+            if bid_amount_total>15:
+                break
+        price  = bid_money_total/bid_amount_total
+        return price
+
+
 
 @app.route('/sell_all',methods=['post'])
 def sell_all():
@@ -278,17 +305,7 @@ def sell_all():
                 message = "You have no bitcoins now."
             else:
                 if request.form["must"]=="true":
-                    r = requests.get('https://data.btcchina.com/data/orderbook') 
-                    result = r.json()
-                    bids = result['bids']
-                    count = 0.0
-                    money = 0.0
-                    for i in bids:
-                        count+=i[1]
-                        money+=i[1]*i[0]
-                        price = money/count
-                        if count>=10:
-                            break
+                    price = get_must_sell_price(g.bc)-1
                 else:
                     r = requests.get('https://data.btcchina.com/data/ticker') 
                     result = r.json()
