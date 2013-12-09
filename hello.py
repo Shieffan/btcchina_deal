@@ -160,6 +160,19 @@ def get_price():
             res={"bid":float(bid_price),"ask":float(ask_price)}
             code = 0
             return jsonify(message=message,code=code,obj=res)
+        except requests.exceptions.Timeout:
+            try:
+                result = g.bc.get_market_depth()
+                bid_price = result["market_depth"]['bid'][0]["price"]
+                ask_price = result["market_depth"]['ask'][0]["price"]    
+                message = "<li>Bid Price: %g</li><li>Ask Price: %g</li>" % (bid_price,ask_price)
+                res={"bid":bid_price,"ask":ask_price}
+                code = 0
+                return jsonify(message=message,code=code,obj=res)
+            except Exception as e:
+                message = "Something wrong happened: %s" % e
+                code = -1
+                return jsonify(message=message,code=code)
         except Exception as e:
             message = "Something wrong happened: %s" % e
             code = -1
