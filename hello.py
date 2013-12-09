@@ -124,10 +124,10 @@ def get_info():
         try:
             result = g.bc.get_account_info()
             title = result["profile"]["username"].title()
-            btc_amount = result["balance"]["btc"]["amount"] or 0
-            cny_amount = result["balance"]["cny"]["amount"] or 0
-            f_btc_amount = result["frozen"]["btc"]["amount"] or 0
-            f_cny_amount = result["frozen"]["cny"]["amount"] or 0
+            btc_amount = result["balance"]["btc"]["amount"].replace(",","") or 0
+            cny_amount = result["balance"]["cny"]["amount"].replace(",","") or 0
+            f_btc_amount = result["frozen"]["btc"]["amount"].replace(",","") or 0
+            f_cny_amount = result["frozen"]["cny"]["amount"].replace(",","") or 0
             message = "%s, you currently have <strong>%g</strong> bitcoins and ¥%g RMB, frozen <strong>%g</strong> bitcoins, ¥%g RMB." % (title,float(btc_amount),float(cny_amount),float(f_btc_amount),float(f_cny_amount))
             code = 0
             res={"btc_amount":btc_amount,"cny_amount":cny_amount,"f_btc_amount":f_btc_amount,"f_cny_amount":f_cny_amount}
