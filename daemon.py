@@ -63,7 +63,7 @@ def get_must_sell_price(bc):
             if count>=15:
                 break
         return price
-    except requests.exceptions.RequestException:
+    except requests.exceptions.RequestException,AttributeError:
         result = bc.get_market_depth(10)
         bid_money_total=0.0
         bid_amount_total=0.0
