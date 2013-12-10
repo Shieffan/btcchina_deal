@@ -19,10 +19,10 @@ if sys.getdefaultencoding() != default_encoding:
 cwd = os.path.dirname(os.path.realpath(__file__))
 pid = os.path.join(cwd,"tmp/daemon.pid") 
 logger = logging.getLogger(__name__) 
-logger.setLevel(logging.DEBUG) 
+logger.setLevel(logging.INFO) 
 logger.propagate = False
 fh = logging.FileHandler(os.path.join(cwd,"tmp/daemon.log"), "a+")
-fh.setLevel(logging.DEBUG)
+fh.setLevel(logging.INFO)
 formatter = logging.Formatter("%(asctime)s;%(levelname)s:%(message)s","%Y-%m-%d %H:%M:%S")
 fh.setFormatter(formatter)
 logger.addHandler(fh) 
