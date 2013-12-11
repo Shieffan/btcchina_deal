@@ -39,7 +39,7 @@ def main():
                     seq = result[-1]['tid']
         except Exception as e:
             logging.warn("Fetch trade history failed. Reason: %s. Retry in 5 seconds." % e)
-            sleep(5)
+            sleep(15)
             continue
 
         if len(result):

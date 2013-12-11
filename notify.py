@@ -44,9 +44,8 @@ def main():
             continue
 
         try:
-            res = c.execute("SELECT * FROM price_notify")
             ids = []
-            for row in res:
+            for row in c.execute("SELECT * FROM price_notify"):
                 if row[1]==0 and price<row[2]:
                     mail_body+='Current price %g is lower than %g.\n' %(price,row[2])
                     ids.append((row[0],))

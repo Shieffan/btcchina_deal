@@ -36,6 +36,9 @@
     p{
       margin-left: 2em;
     }
+    p.notify{
+      margin:0.5em 0 1.5em 1em;
+    }
     ul{
       margin: 0.35em 0;
     }
@@ -121,6 +124,10 @@
       float: left;
       margin-right: 2em;
     }
+    ul#notify_list li a{
+      font-size: 0.8em;
+      padding:0 0.5em;
+    }
     @media screen and (max-device-width: 480px){
       #big_price{
         border-top-left-radius: 2px;
@@ -139,6 +146,7 @@
         float: none;
         margin-right: 2em;
       }
+
     }
 </style>
 </head>
@@ -233,6 +241,24 @@
      <button value="Update" id="update_btn">Update</button>
   </p>
 </div>
+<h3>Notify Setting:<span id="notify_status" class="status"></span></h3>
+<ul id="notify_list">
+</ul>
+<p class="notify">
+  When
+  <select name="notify_type">
+    <option value="bid" selected="selected">Bid Price</option>
+    <option value="ask">Ask Price</option>
+  </select>
+  <span class="ratio-group">
+  <input type="radio" value="gt" name="direction">higher
+  <input type="radio" name="direction" checked="checked" value="lt">lower
+  </span>
+  than
+  <input type="text" name="notify_price" size="10">
+  <button class="add" id="add_notify">Notify me.</button>
+</p>
+
 <h3>Related Links:</h3>
 <div class="links">
   <ul>
@@ -419,6 +445,38 @@
 
   }
 
+  function refresh_notify(){
+    $.ajax({
+        type: "get",
+        timeout: 20000,
+        cache: false,
+        dataType: "json",
+        url: "{{ url_for('get_notify') }}",
+        beforeSend: function(XMLHttpRequest){
+          $('#notify_status').removeClass("fail").html("Refreshing...");
+        },
+        success: function(data, textStatus){
+          if(data.code==0){
+            $('#notify_status').removeClass("fail").html("Updated <em class='time'>0</em> seconds ago..");
+            if(data.res.length){
+              str='';
+              for(var i=0;i<data.res.length;i++){
+                notify_type = data.res[i][1]==0?"Bid Price":"Ask Price";
+                direction = data.res[i][2]==1?"grow higher":"fall down lower";
+                price = data.res[i][3];
+                str+="<li>When "+notify_type +" " + direction+" than ¥"+price+"<a href='javascript:void(0)' data-id='"+data.res[i][0]+"'>[Delete]</a></li>";
+              }
+              $("#notify_list").html(str);
+            }
+          }else{
+            $('#notify_status').removeClass("success").addClass("fail").html(data.message+",updated <em class='time'>0</em> seconds ago..");
+          }
+        },
+        error: function(XMLHttpRequest,textStatus){
+          $('#notify_status').addClass('fail').html(textStatus+",updated <em class='time'>0</em> seconds ago..");
+        }
+    });
+  }
 
   function update_config(){
     low = $('input[name="low"]').val();
@@ -630,6 +688,73 @@
     });
   }
 
+  function add_notify(){
+    var notify_type=$("select[name='notify_type']").val();
+    var direction = $('input[name="direction"]:checked').val();
+    var price = $('input[name="notify_price"]').val();
+    if(!price){return false;}
+    var that=this;
+    $.ajax({
+      type: "post",
+      timeout: 30000,
+      data:{
+        type:notify_type,
+        direction:direction,
+        price:price
+      },
+      cache: false,
+      dataType: "json",
+      url: "{{ url_for('add_notify') }}",
+      beforeSend: function(XMLHttpRequest){
+        $(that).prop('disabled', true);
+      },
+      success: function(data, textStatus){
+        $(that).prop('disabled', false);
+        if(data.code==0){
+          notify_type = notify_type=='bid'?"Bid Price":"Ask Price";
+          direction = direction=="gt"?"grow higher":"fall down lower";
+          $("#notify_list").append("<li>When "+notify_type +" " + direction+" than ¥"+price+"<a href='javascript:void(0)' data-id='"+data.id+"'>[Delete]</a></li>");
+        }
+      },
+      error: function(XMLHttpRequest,textStatus){
+          //do nothing
+      }
+        
+    });
+  }
+
+  function del_notify(){
+    var notify_id=$(this).data('id');
+    var that=this;
+    $.ajax({
+        type: "post",
+        timeout: 20000,
+        data:{
+          id:notify_id
+        },
+        cache: false,
+        dataType: "json",
+        url: "{{ url_for('del_notify') }}",
+        beforeSend: function(XMLHttpRequest){
+          $(that).html('[Deleting..]')
+        },
+        success: function(data, textStatus){
+          if(data.code==0){
+            $(that).parents('li').remove();
+          }else{
+             $(that).html('[Delete]');
+             $('#notify_status').addClass('fail').html(data.message+","+$('#notify_status').html());
+          }
+          window.setTimeout(refresh_undeal_orders,2000);
+        },
+        error: function(XMLHttpRequest,textStatus){
+          $(that).html('Cancel');
+          $('#notify_status').addClass('fail').html("Delete notify failed: " + textStatus);
+        }
+        
+    });
+  }
+
   function rolltitle()
   {
       text = top.document.title;
@@ -647,6 +772,8 @@
       window.setInterval(refresh_transactions,60000);
       refresh_undeal_orders();
       window.setInterval(refresh_undeal_orders,20000);
+      window.setTimeout(refresh_notify,5000);
+      window.setInterval(refresh_notify,120000);
 
       $('#update_btn').bind('click',update_config);
       $("#submit-deal").bind('click',process_order);
@@ -656,6 +783,9 @@
         $(this).toggleClass("bigger");
         window.getSelection().empty();
       });
+
+      $("#add_notify").bind('click',add_notify);
+      $("#notify_list").on("click", 'a', del_notify);
 
       $("input[name='daemon_btn']").bind("click",toggle_daemon);
 

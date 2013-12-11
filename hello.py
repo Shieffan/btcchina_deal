@@ -5,6 +5,7 @@ import sys
 import datetime
 import btcchina
 import requests
+import sqlite3
 from flask import Flask,render_template,request,flash,redirect,url_for,jsonify,session,g
 
 default_encoding = 'utf-8'
@@ -398,6 +399,74 @@ def toggle_daemon():
     else:
         return "Illegal Request."
 
+@app.route('/add_notify',methods=["POST"])
+def add_notify():
+    if request.is_xhr:
+        try:
+            conn = sqlite3.connect('trade.db')
+            c = conn.cursor()
+            c.execute("CREATE TABLE IF NOT EXISTS price_notify (id INTEGER PRIMARY KEY, type INTEGER NOT NULL,direction INTEGER NOT NULL,price REAL NOT NULL)")
+            conn.commit()
+            type = 0 if request.form["type"]=='bid' else 1
+            direction = 0 if request.form["direction"]=="lt" else 1
+            price = float(request.form["price"])
+            c.execute("INSERT INTO price_notify (type,direction,price) VALUES (?,?,?)",(type,direction,price))
+            conn.commit()
+            id = c.lastrowid
+            conn.close()
+            code = 0
+            message = "Add notification successfully."
+            return jsonify(code=code,id=id,message=message)
+        except Exception as e:
+            code = -1
+            message = "Something Error happened: %s" %e
+            return jsonify(code=code,message=message)
+
+    else:
+        return "Illegal Request."
+
+@app.route('/del_notify',methods=["POST"])
+def del_notify():
+    if request.is_xhr:
+        try:
+            conn = sqlite3.connect('trade.db')
+            c = conn.cursor()
+            id = request.form['id']
+            c.execute("DELETE FROM price_notify WHERE id=?",id)
+            conn.commit()
+            conn.close()
+            code = 0
+            message = "Delete notify successfully."
+            return jsonify(code=code,id=id,message=message)
+        except Exception as e:
+            code = -1
+            message = "Something Error happened: %s" %e
+            return jsonify(code=code,message=message)
+
+    else:
+        return "Illegal Request."
+
+
+@app.route('/get_notify',methods=["GET"])
+def get_notify():
+    if request.is_xhr:
+        try:
+            conn = sqlite3.connect('trade.db')
+            c = conn.cursor()
+            c.execute("SELECT * FROM price_notify")
+            rows = c.fetchall()
+            conn.close()
+            if len(rows):
+                code = 0
+                return jsonify(code=code,res=rows)
+            else:
+                code = 1
+                message = "You have no notifications."
+                return jsonify(code=code,message=message)
+        except Exception as e:
+            return jsonify(code=-1,message=str(e))
+    else:
+        return "Illegal Request."
 
 @app.route('/update',methods=['POST'])
 def updateConfig():
