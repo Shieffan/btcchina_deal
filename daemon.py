@@ -63,7 +63,7 @@ def get_must_sell_price(bc):
             if count>=15:
                 break
         return price
-    except requests.exceptions.RequestException,AttributeError:
+    except (requests.exceptions.RequestException,AttributeError):
         result = bc.get_market_depth(10)
         bid_money_total=0.0
         bid_amount_total=0.0
@@ -175,7 +175,7 @@ def main():
                     r = requests.get('https://data.btcchina.com/data/ticker') 
                     result = r.json()
                     cur_price = float(result['ticker']['buy'])
-                except requests.exceptions.RequestException,AttributeError:
+                except (requests.exceptions.RequestException,AttributeError):
                     result = bc.get_market_depth()
                     cur_price = float(result["market_depth"]['bid'][0]["price"])
                 except:
