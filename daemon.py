@@ -215,8 +215,8 @@ def main():
                         res = bc_deal.sell(str(sell_price-0.1),str(amount-0.00001))
                         if res==True:
                             reason = "$$_Ratio: %g; \nCurrent bid price %g; \nLOW_SELL_PRICE: %g;\n\nFuck, selling all %g bitcoins." % (ratio,cur_price,LOW_SELL_PRICE,amount)
-                            mail("Sorry to sell all your bitcoins",reason+"\n\nSell with price "+str(sell_price) + " successfully！")
-                            logger.info("$~_Commit order at price %g successfully！\n" % sell_price)
+                            mail("Sorry to sell all your bitcoins",reason+"\n\nSell with price "+str(sell_price) + " successfully!")
+                            logger.info("$~_Commit order at price %g successfully!\n" % sell_price)
                             prev_price = 0
                             continue
                         else:
@@ -232,7 +232,7 @@ def main():
                         if res==True:
                             reason = "$$_Ratio: %g; \nCurrent bid price %g; \nHIGH_SELL_PRICE: %g;\n\nNice, selling all %g bitcoins." % (ratio,cur_price,HIGH_SELL_PRICE,amount)
                             mail("Happly to sell all your bitcoins.",reason)
-                            logger.info("$~_Commit order successfully！\n")
+                            logger.info("$~_Commit order successfully!\n")
                             prev_price = 0
                             continue
                         else:
@@ -249,8 +249,8 @@ def main():
                     res = bc_deal.sell(str(sell_price-0.1),str(amount-0.00001))
                     if res==True:
                         reason = "$$_Ratio: %g; \nCurrent bid price %g; \nYour last buybtc price %g; \nLOW_SELL_RATIO: %g;\n\nFuck, selling all %g bitcoins." % (ratio,cur_price,last_price,LOW_SELL_RATIO,amount)
-                        mail("Sorry to sell all your bitcoins",reason+"\n\nSell with price "+str(sell_price) + " successfully！")
-                        logger.info("$~_Commit order at price %g successfully！\n" % sell_price)
+                        mail("Sorry to sell all your bitcoins",reason+"\n\nSell with price "+str(sell_price) + " successfully!")
+                        logger.info("$~_Commit order at price %g successfully!\n" % sell_price)
                         prev_price = 0
                         continue
                     else:
@@ -267,7 +267,7 @@ def main():
                     if res==True:
                         reason=  "$$_Ratio: %g; \nCurrent bid price %g; \nYour last buybtc price %g; \nHIGH_SELL_RATIO: %g;\n\nNice, selling all %g bitcoins." % (ratio,cur_price,last_price,HIGH_SELL_RATIO,amount)
                         mail("Happly to sell all your bitcoins.",reason)
-                        logger.info("$~_Commit order successfully！\n")
+                        logger.info("$~_Commit order successfully!\n")
                         prev_price = 0
                         continue
                     else:
@@ -285,8 +285,8 @@ def main():
                         res = bc_deal.sell(str(sell_price-0.1),str(amount-0.00001))
                         if res==True:
                             reason = "Sorry to sell all your %g bitcoins because its price has fallen down %g RMB in the past 30 seconds." % (amount,prev_price - cur_price)
-                            mail("I am selling all your bitcoins",reason+"\n\nSell with price "+str(sell_price) + " successfully！")
-                            logger.info("$~_Commit order at price %g successfully！\n" % sell_price)
+                            mail("I am selling all your bitcoins",reason+"\n\nSell with price "+str(sell_price) + " successfully!")
+                            logger.info("$~_Commit order at price %g successfully!\n" % sell_price)
                             prev_price = 0
                     except Exception as e:
                         logger.error("\n!!!Selling error: %s ...\n" % e)
