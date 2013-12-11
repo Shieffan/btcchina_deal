@@ -566,7 +566,7 @@
     var that=this;
     $.ajax({
         type: "post",
-        timeout: 30000,
+        timeout: 20000,
         data:{
           id:order_id
         },
@@ -660,7 +660,7 @@
     var that=this;
     $.ajax({
       type: "post",
-      timeout: 30000,
+      timeout: 20000,
       cache: false,
       dataType: "json",
       url: "{{ url_for('toggle_daemon') }}",
@@ -696,7 +696,7 @@
     var that=this;
     $.ajax({
       type: "post",
-      timeout: 30000,
+      timeout: 20000,
       data:{
         type:notify_type,
         direction:direction,
