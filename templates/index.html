@@ -470,6 +470,8 @@
             }
           }else if(data.code==-1){
             $('#notify_status').removeClass("success").addClass("fail").html(data.message+",updated <em class='time'>0</em> seconds ago..");
+          }else{
+            $('#notify_status').html("Updated <em class='time'>0</em> seconds ago..");
           }
         },
         error: function(XMLHttpRequest,textStatus){
