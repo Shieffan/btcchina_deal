@@ -36,7 +36,7 @@ def main():
                 result = r.json()
                 seq = result[-1]['tid']
         except Exception as e:
-            logger.warn("Fetch trade history failed. Reason: %s. Retry in 5 seconds." % e)
+            logging.warn("Fetch trade history failed. Reason: %s. Retry in 5 seconds." % e)
             sleep(5)
             continue
 
