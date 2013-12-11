@@ -30,11 +30,13 @@ def main():
             if seq==0:
                 r = requests.get('https://data.btcchina.com/data/historydata',timeout=60) 
                 result = r.json()
-                seq = result[-1]['tid']
+                if len(result):
+                    seq = result[-1]['tid']
             else:
                 r = requests.get('https://data.btcchina.com/data/historydata?since='+seq,timeout=60)
                 result = r.json()
-                seq = result[-1]['tid']
+                if len(result):
+                    seq = result[-1]['tid']
         except Exception as e:
             logging.warn("Fetch trade history failed. Reason: %s. Retry in 5 seconds." % e)
             sleep(5)
