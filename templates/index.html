@@ -571,7 +571,11 @@
             }else{
               $('#deal_status').removeClass("success").addClass("fail").html(data.message);
             }
-           
+            
+            if(deal_type=='buy'&&data.code!=-1){
+              $("input[name='daemon_btn']").val("Enable");
+              $("#daemon_status").html("disabled");
+            }
             window.setTimeout(function(){
               $('#deal_status').fadeOut("normal");
             },5000);

@@ -240,22 +240,31 @@ def process_order():
                     message = "Sell your %s bitcoins at price %s successfully." %(cc,price)
                 else:
                     try:
-                        code = -1
+                        code = 1
                         message = "Process deal failed, server says: " + res["message"]
                     except:
-                        code = -1
+                        code = 1
                         message = "Server communicate with btcchina timeout."
             elif type=="buy":
+                #Disable daemon first
+                try:
+                    cf = ConfigParser.ConfigParser()
+                    cf.read("btc.conf")
+                    cf.set("global", "use",'false')
+                    cf.write(open('btc.conf','w'))
+                except:
+                    pass
+
                 res = g.bc_deal.buy(str(price),str(cc))
                 if res==True:
                     code = 0
                     message = "Buy %s bitcoins at price %s successfully." %(cc,price)
                 else:
                     try:
-                        code = -1
+                        code = 1
                         message = "Process deal failed, server says: " + res["message"]
                     except:
-                        code = -1
+                        code = 1
                         message = "Server communicate with btcchina timeout."
         except Exception as e:
             code = -1

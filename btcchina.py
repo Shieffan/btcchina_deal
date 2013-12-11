@@ -29,12 +29,15 @@ class BTCChina():
                     # probably a cleaner way to do this
                     param_string=re.sub("[\[\] ]","",str(pdict[f]))
                     param_string=re.sub("'",'',param_string)
+                    if param_string=="False":
+                        param_string=''
                     pstring+=f+'='+param_string+'&'
                 else:
                     pstring+=f+'='+str(pdict[f])+'&'
             else:
                 pstring+=f+'=&'
         pstring=pstring.strip('&')
+
         # now with correctly ordered param string, calculate hash
         phash = hmac.new(self.secret_key, pstring, hashlib.sha1).hexdigest()
         return phash
@@ -55,7 +58,7 @@ class BTCChina():
         # must use b64 encode        
         auth_string='Basic '+base64.b64encode(self.access_key+':'+pd_hash)
         headers={'Authorization':auth_string,'Json-Rpc-Tonce':tonce,'Content-Type': 'application/json-rpc'}
- 
+        
         #post_data dictionary passed as JSON    
         try:
             self.conn.request("POST",'/api_trade_v1.php',json.dumps(post_data),headers)
