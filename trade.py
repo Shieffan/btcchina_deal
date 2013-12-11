@@ -61,10 +61,10 @@ def main():
 
         if len(result):
             continue
-        s_time = datetime.fromtimestamp(int(result[0]['date'])).strftime('%Y-%m-%d %H:%M:%S')
-        e_time = datetime.fromtimestamp(int(result[-1]['date'])).strftime('%Y-%m-%d %H:%M:%S')
-        logging.info("Saving trade from %s(%s) to %s(%s) successfully. Sleep %d seconds.\n" %(s_time,result[0]['tid'],e_time,result[-1]['tid'],interval))
-        sleep(interval)
+            s_time = datetime.fromtimestamp(int(result[0]['date'])).strftime('%Y-%m-%d %H:%M:%S')
+            e_time = datetime.fromtimestamp(int(result[-1]['date'])).strftime('%Y-%m-%d %H:%M:%S')
+            logging.info("Saving trade from %s(%s) to %s(%s) successfully. Sleep %d seconds.\n" %(s_time,result[0]['tid'],e_time,result[-1]['tid'],interval))
+            sleep(interval)
 
 
 if __name__ == '__main__':
