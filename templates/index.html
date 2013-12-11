@@ -461,10 +461,9 @@
             if(data.res.length){
               str='';
               for(var i=0;i<data.res.length;i++){
-                notify_type = data.res[i][1]==0?"Bid Price":"Ask Price";
-                direction = data.res[i][2]==1?"grow higher":"fall down lower";
-                price = data.res[i][3];
-                str+="<li>When "+notify_type +" " + direction+" than ¥"+price+"<a href='javascript:void(0)' data-id='"+data.res[i][0]+"'>[Delete]</a></li>";
+                direction = data.res[i][1]==1?"grow higher":"fall down lower";
+                price = data.res[i][2];
+                str+="<li>When price " + direction+" than ¥"+price+"<a href='javascript:void(0)' data-id='"+data.res[i][0]+"'>[Delete]</a></li>";
               }
               $("#notify_list").html(str);
             }
@@ -691,7 +690,6 @@
   }
 
   function add_notify(){
-    var notify_type=$("select[name='notify_type']").val();
     var direction = $('input[name="direction"]:checked').val();
     var price = $('input[name="notify_price"]').val();
     if(!price){return false;}
@@ -700,7 +698,6 @@
       type: "post",
       timeout: 20000,
       data:{
-        type:notify_type,
         direction:direction,
         price:price
       },
@@ -713,9 +710,8 @@
       success: function(data, textStatus){
         $(that).prop('disabled', false);
         if(data.code==0){
-          notify_type = notify_type=='bid'?"Bid Price":"Ask Price";
           direction = direction=="gt"?"grow higher":"fall down lower";
-          $("#notify_list").append("<li>When "+notify_type +" " + direction+" than ¥"+price+"<a href='javascript:void(0)' data-id='"+data.id+"'>[Delete]</a></li>");
+          $("#notify_list").append("<li>When price " + direction+" than ¥"+price+"<a href='javascript:void(0)' data-id='"+data.id+"'>[Delete]</a></li>");
         }
       },
       error: function(XMLHttpRequest,textStatus){

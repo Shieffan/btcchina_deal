@@ -405,12 +405,11 @@ def add_notify():
         try:
             conn = sqlite3.connect('trade.db')
             c = conn.cursor()
-            c.execute("CREATE TABLE IF NOT EXISTS price_notify (id INTEGER PRIMARY KEY, type INTEGER NOT NULL,direction INTEGER NOT NULL,price REAL NOT NULL)")
+            c.execute("CREATE TABLE IF NOT EXISTS price_notify (id INTEGER PRIMARY KEY,direction INTEGER NOT NULL,price REAL NOT NULL)")
             conn.commit()
-            type = 0 if request.form["type"]=='bid' else 1
             direction = 0 if request.form["direction"]=="lt" else 1
             price = float(request.form["price"])
-            c.execute("INSERT INTO price_notify (type,direction,price) VALUES (?,?,?)",(type,direction,price))
+            c.execute("INSERT INTO price_notify (direction,price) VALUES (?,?)",(direction,price))
             conn.commit()
             id = c.lastrowid
             conn.close()
