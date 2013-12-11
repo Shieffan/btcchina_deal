@@ -42,14 +42,15 @@ def main():
             sleep(5)
             continue
 
-        items = []
-        for t in result:
-            type = 0 if t['type']=='sell' else 1
-            item = (int(t['date']),float(t['price']),float(t['amount']),int(t['tid']),type)
-            items.append(item)
+        if len(result):
+            items = []
+            for t in result:
+                type = 0 if t['type']=='sell' else 1
+                item = (int(t['date']),float(t['price']),float(t['amount']),int(t['tid']),type)
+                items.append(item)
 
-        c.executemany('INSERT INTO trade VALUES (?,?,?,?,?)', items)
-        conn.commit()
+            c.executemany('INSERT INTO trade VALUES (?,?,?,?,?)', items)
+            conn.commit()
 
         if len(result)>=99:
             if interval>=10:
