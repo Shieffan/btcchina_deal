@@ -47,11 +47,11 @@ def main():
             ids = []
             for row in c.execute("SELECT * FROM price_notify"):
                 if row[1]==0 and price<row[2]:
-                    mail_body+='Current price %g is lower than %g.\n' %(price,row[2])
+                    mail_body+='\nCurrent price %g is lower than %g.\n' %(price,row[2])
                     ids.append((row[0],))
 
                 if row[1]==1 and price>row[2]:
-                    mail_body+='Current price %g is higher than %g.\n' %(price,row[2])
+                    mail_body+='\nCurrent price %g is higher than %g.\n' %(price,row[2])
                     ids.append((row[0],))
             if len(ids):
                 c.executemany("DELETE FROM price_notify WHERE id=?",ids)
