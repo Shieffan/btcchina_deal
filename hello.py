@@ -160,7 +160,7 @@ def get_price():
             res={"bid":float(bid_price),"ask":float(ask_price)}
             code = 0
             return jsonify(message=message,code=code,obj=res)
-        except (requests.exceptions.RequestException,AttributeError):
+        except (requests.exceptions.RequestException,ValueError):
             try:
                 result = g.bc.get_market_depth()
                 bid_price = result["market_depth"]['bid'][0]["price"]
