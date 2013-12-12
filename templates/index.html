@@ -598,7 +598,7 @@
     var deal_type=$("select[name='deal-type']").val();
     var deal_amount = parseFloat($.trim($("input[name='deal-amount']").val()));
     if(deal_amount==_GLOBAL["btc_amount"]&&deal_type=="sell"){
-      deal_amount=btc_amount-0.00001
+      deal_amount=deal_amount-0.00001
     }
     var deal_price = parseFloat($.trim($("input[name='deal-price']").val()));
     if(isNaN(deal_amount)||isNaN(deal_price)){
