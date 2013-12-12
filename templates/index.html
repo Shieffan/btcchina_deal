@@ -466,6 +466,7 @@
           }else if(data.code==-1){
             $('#notify_status').removeClass("success").addClass("fail").html(data.message+",updated <em class='time'>0</em> seconds ago..");
           }else{
+            $("#notify_list").html('');
             $('#notify_status').html("Updated <em class='time'>0</em> seconds ago..");
           }
         },
@@ -766,8 +767,8 @@
       window.setInterval(refresh_transactions,60000);
       refresh_undeal_orders();
       window.setInterval(refresh_undeal_orders,20000);
-      window.setTimeout(refresh_notify,5000);
-      window.setInterval(refresh_notify,120000);
+      window.setTimeout(refresh_notify,3000);
+      window.setInterval(refresh_notify,60000);
 
       $('#update_btn').bind('click',update_config);
       $("#submit-deal").bind('click',process_order);
