@@ -309,7 +309,8 @@ def sell_all():
     if request.is_xhr:
         try:
             res=g.bc.get_account_info()
-            cc=float(res["balance"]["btc"]["amount"])
+	    fee=float(res['profile']['trade_fee'])
+            cc=float(res["balance"]["btc"]["amount"])*(1-fee)
             if cc<0.0001:
                 code = -1
                 message = "You have no bitcoins now."
