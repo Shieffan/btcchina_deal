@@ -309,7 +309,7 @@ def sell_all():
     if request.is_xhr:
         try:
             res=g.bc.get_account_info()
-	    fee=float(res['profile']['trade_fee'])
+            fee=float(res['profile']['trade_fee'])/100
             cc=float(res["balance"]["btc"]["amount"])*(1-fee)
             if cc<0.0001:
                 code = -1

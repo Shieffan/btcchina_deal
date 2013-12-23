@@ -159,14 +159,14 @@ def main():
         logger.info("Refresh info..")
         try:
             result = bc.get_account_info()
-	    fee=float(result['profile']['trade_fee'])
+            fee=float(result['profile']['trade_fee'])/100
             if float(result["balance"]["btc"]["amount"]) < 0.001:
                 logger.info("You have no btccoins now...Let me sleep one minute :)\n")
                 prev_price = 0
                 sleep(60)
             else:
                 amount = float(result["balance"]["btc"]["amount"])
-		amount = (1-fee)*amount
+                amount = (1-fee)*amount
                 #GET THE LAST BUYBTC TRANSACTION
                 result = bc.get_transactions("buybtc",1)
                 t = result["transaction"][0]
