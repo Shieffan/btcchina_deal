@@ -156,7 +156,8 @@ if __name__ == '__main__':
                     price = raw_input('\r请您出价,当前价格请直接按ENTER: ')
                     if cc=="":
                         res=bc.get_account_info()
-                        cc=float(res["balance"]["btc"]["amount"])
+                        fee=float(res['profile']['trade_fee'])/100
+                        cc=float(res["balance"]["btc"]["amount"])*(1-fee)
                     else:
                         cc=float(cc)
                     if price=="":
@@ -179,7 +180,8 @@ if __name__ == '__main__':
                     cancel_order(bc_deal,cc)
                 elif c.lower()=='ss' or c.lower()=='sss':
                     res=bc.get_account_info()
-                    cc=float(res["balance"]["btc"]["amount"])
+                    fee=float(res['profile']['trade_fee'])/100
+                    cc=float(res["balance"]["btc"]["amount"])*(1-fee)
                     price="current"
                     if c.lower()=='ss':
                         process_order(bc_deal,cc,price,"sell")
