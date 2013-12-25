@@ -34,7 +34,10 @@ def generate_info(bc):
     message = "%s, you currently have %g bitcoins and %g RMB, frozen %g bitcoins,%g RMB.\n" % (title,float(btc_amount),float(cny_amount),float(f_btc_amount),float(f_cny_amount))
     result = bc.get_transactions("all",1)
     t = result["transaction"][0]
-    price = abs(float(t["cny_amount"])/float(t["btc_amount"]))
+    try:
+        price = abs(float(t["cny_amount"])/float(t["btc_amount"]))
+    except:
+        price = "No price info."
     message += "Last transaction: "+t["type"].upper()+ " " + str(abs(float(t["btc_amount"]))) + " bitcoins with price CNY:" + str(price)+" at "+ datetime.datetime.fromtimestamp(t["date"]).strftime('%Y-%m-%d %H:%M:%S')
     message += "\nInfo updated at "+time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()));
     return message

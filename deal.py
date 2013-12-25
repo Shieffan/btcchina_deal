@@ -158,6 +158,7 @@ if __name__ == '__main__':
                         res=bc.get_account_info()
                         fee=float(res['profile']['trade_fee'])/100
                         cc=float(res["balance"]["btc"]["amount"])*(1-fee)
+                        cc = round(cc*1000)/1000
                     else:
                         cc=float(cc)
                     if price=="":
@@ -182,6 +183,7 @@ if __name__ == '__main__':
                     res=bc.get_account_info()
                     fee=float(res['profile']['trade_fee'])/100
                     cc=float(res["balance"]["btc"]["amount"])*(1-fee)
+                    cc = round(cc*1000)/1000
                     price="current"
                     if c.lower()=='ss':
                         process_order(bc_deal,cc,price,"sell")

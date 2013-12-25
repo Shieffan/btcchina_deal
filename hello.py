@@ -311,6 +311,7 @@ def sell_all():
             res=g.bc.get_account_info()
             fee=float(res['profile']['trade_fee'])/100
             cc=float(res["balance"]["btc"]["amount"])*(1-fee)
+            cc = round(cc*1000)/1000
             if cc<0.0001:
                 code = -1
                 message = "You have no bitcoins now."
