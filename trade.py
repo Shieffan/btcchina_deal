@@ -5,6 +5,7 @@ import os
 import requests
 from datetime import datetime
 import sqlite3
+import ConfigParser
 from time import sleep
 import logging
 cwd = os.path.dirname(os.path.realpath(__file__))
@@ -12,6 +13,27 @@ pid = os.path.join(cwd,"tmp/trade.pid")
 requests_log = logging.getLogger("requests")
 requests_log.setLevel(logging.WARNING)
 from daemonize import Daemonize
+
+cf = ConfigParser.ConfigParser()
+cf.read(os.path.join(cwd,"btc.conf"))  
+try:
+    sender_login = cf.get("email", "login")
+    sender_pass = cf.get("email","pass")
+    sender_smtp = cf.get("email","sender_smtp")
+    receiver = cf.get("email","receiver")
+    use_mail = True
+except:
+    use_mail = False
+
+
+def mail(subject="",message=""):
+    global use_mail,sender_login,sender_pass,sender_smtp,receiver
+    if use_mail:
+        sender_addr = sender_login+"@"+sender_smtp.split(":")[0]
+        send_mail(from_addr=sender_addr, to_addr_list=[receiver],subject=subject, message=message,login=sender_login, password=sender_pass,smtpserver=sender_smtp)
+    else:
+        return None
+
 
 def main():
     conn = sqlite3.connect(os.path.join(cwd,'trade.db'))
@@ -23,8 +45,10 @@ def main():
     logging.info("Trade fetch daemon started...")
     c.execute("DELETE FROM trade")
     conn.commit()
-    interval = 15
+    interval = 60
     seq = 0
+    counter = 0
+    last_notify_time = datetime.now()
     while True:
         try:
             if seq==0:
@@ -58,6 +82,22 @@ def main():
         else:
             if interval<=60:
                 interval +=5
+
+        if interval<=60:
+            counter += 1
+        else:
+            counter -= 1
+            if counter<=0:
+                counter = 0
+
+        if counter == 3:
+            message = "We have encountered a trade volumn rush. Please check!"
+            current = datetime.now()
+            time_t = (current-last_notify_time).seconds
+            if time_t>300:
+                mail("Volumn Notification.",message)
+                last_notify_time = current
+            counter = 0
 
         if len(result):
             s_time = datetime.fromtimestamp(int(result[0]['date'])).strftime('%Y-%m-%d %H:%M:%S')
