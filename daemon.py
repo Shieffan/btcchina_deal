@@ -166,7 +166,7 @@ def main():
                 sleep(60)
             else:
                 amount = float(result["balance"]["btc"]["amount"])
-                amount = (1-fee)*amount
+                #amount = (1-fee)*amount
                 amount = round(amount*1000)/1000
                 #GET THE LAST BUYBTC TRANSACTION
                 result = bc.get_transactions("buybtc",1)

@@ -157,7 +157,8 @@ if __name__ == '__main__':
                     if cc=="":
                         res=bc.get_account_info()
                         fee=float(res['profile']['trade_fee'])/100
-                        cc=float(res["balance"]["btc"]["amount"])*(1-fee)
+                        #cc=float(res["balance"]["btc"]["amount"])*(1-fee)
+                        cc=float(res["balance"]["btc"]["amount"])
                         cc = round(cc*1000)/1000
                     else:
                         cc=float(cc)
@@ -182,7 +183,8 @@ if __name__ == '__main__':
                 elif c.lower()=='ss' or c.lower()=='sss':
                     res=bc.get_account_info()
                     fee=float(res['profile']['trade_fee'])/100
-                    cc=float(res["balance"]["btc"]["amount"])*(1-fee)
+                    #cc=float(res["balance"]["btc"]["amount"])*(1-fee)
+                    cc=float(res["balance"]["btc"]["amount"])
                     cc = round(cc*1000)/1000
                     price="current"
                     if c.lower()=='ss':
