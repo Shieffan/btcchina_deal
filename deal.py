@@ -6,6 +6,8 @@ import sys
 import time
 import requests
 import ConfigParser
+import math
+import math
 import btcchina
 from colorama import init,Fore,Style
 from select import select
@@ -159,7 +161,7 @@ if __name__ == '__main__':
                         fee=float(res['profile']['trade_fee'])/100
                         #cc=float(res["balance"]["btc"]["amount"])*(1-fee)
                         cc=float(res["balance"]["btc"]["amount"])
-                        cc = round(cc*1000)/1000
+                        cc = math.floor(cc*1000)/1000
                     else:
                         cc=float(cc)
                     if price=="":
@@ -185,7 +187,7 @@ if __name__ == '__main__':
                     fee=float(res['profile']['trade_fee'])/100
                     #cc=float(res["balance"]["btc"]["amount"])*(1-fee)
                     cc=float(res["balance"]["btc"]["amount"])
-                    cc = round(cc*1000)/1000
+                    cc = math.floor(cc*1000)/1000
                     price="current"
                     if c.lower()=='ss':
                         process_order(bc_deal,cc,price,"sell")

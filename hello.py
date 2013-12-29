@@ -3,6 +3,7 @@
 import ConfigParser
 import sys
 import datetime
+import math
 import btcchina
 import requests
 import sqlite3
@@ -312,7 +313,7 @@ def sell_all():
             fee=float(res['profile']['trade_fee'])/100
             #cc=float(res["balance"]["btc"]["amount"])*(1-fee)
             cc=float(res["balance"]["btc"]["amount"])
-            cc = round(cc*1000)/1000
+            cc = math.floor(cc*1000)/1000
             if cc<0.0001:
                 code = -1
                 message = "You have no bitcoins now."

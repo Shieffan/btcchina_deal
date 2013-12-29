@@ -8,6 +8,7 @@ import requests
 from time import sleep
 from daemonize import Daemonize
 import ConfigParser
+import math
 import btcchina
 from mymail import send_mail
 
@@ -167,7 +168,7 @@ def main():
             else:
                 amount = float(result["balance"]["btc"]["amount"])
                 #amount = (1-fee)*amount
-                amount = round(amount*1000)/1000
+                amount = math.floor(amount*1000)/1000
                 #GET THE LAST BUYBTC TRANSACTION
                 result = bc.get_transactions("buybtc",1)
                 t = result["transaction"][0]
