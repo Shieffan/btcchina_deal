@@ -13,6 +13,7 @@ pid = os.path.join(cwd,"tmp/trade.pid")
 requests_log = logging.getLogger("requests")
 requests_log.setLevel(logging.WARNING)
 from daemonize import Daemonize
+from mymail import send_mail
 
 cf = ConfigParser.ConfigParser()
 cf.read(os.path.join(cwd,"btc.conf"))  
