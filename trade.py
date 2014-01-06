@@ -92,8 +92,12 @@ def main():
                 counter = 0
 
         if counter == 3:
-            message = "We have encountered a trade volumn rush. Please check!"
             current = datetime.now()
+            message = str(current) + " : " + "We have encountered a trade volumn rush. Please check!"
+            try:
+                message = message + "\nCurrent Price:" + str(result[0]['price'])
+            except:
+                pass
             time_t = (current-last_notify_time).seconds
             if time_t>300:
                 mail("Volumn Notification.",message)
